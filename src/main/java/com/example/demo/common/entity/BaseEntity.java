@@ -29,7 +29,7 @@ public class BaseEntity {
 
     public enum State {
         ACTIVE, // 활성화
-        INACTIVE, // 비활성화 (기본값으로 사용하지 않음)
+        INACTIVE, // 휴먼계정
         SUSPENDED, // 정지
         DEACTIVATED // 탈퇴
     }

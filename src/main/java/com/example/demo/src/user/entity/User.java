@@ -5,6 +5,7 @@ import com.example.demo.common.enums.UserRoleEnum;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,34 +29,45 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 30)
     private String name;
 
+    @Column(name = "birthDate")
+    private LocalDate birthDate; // 생일 필드
+
     @Column(nullable = false)
     private boolean isOAuth;
 
     @Column(name = "lastLoginAt")
     private LocalDateTime lastLoginAt; //마지막 로그인
-
-    @Column(nullable = false)
-    private boolean privacyPolicyAgreed;  //사용자가 개인정보 처리방침에 동의했는지 여부
-
-    @Column(name = "privacyPolicyAgreedAt")
-    private LocalDateTime privacyPolicyAgreedAt; //사용자가 마지막으로 개인정보 처리방침에 동의한 날짜와 시간입니다. 이 필드는 사용자가 동의할 때마다 업데이트
-
-
     @Enumerated(value = EnumType.STRING)
     @Column(name = "role", columnDefinition = "VARCHAR(50)")
     private UserRoleEnum role;
+    @Column(nullable = false)
+    private boolean privacyPolicyAgreed;  //사용자가 개인정보 처리방침에 동의했는지 여부
+    @Column(nullable = false)
+    private boolean dataPolicyAgreed; // 데이터 정책 동의 필드
+    @Column(nullable = false)
+    private boolean locationBasedServicesAgreed; // 위치기반 서비스 동의 필드
+
+    @Column(name = "lastAgreedAt")
+    private LocalDateTime lastAgreedAt; // 마지막으로 동의한 시각
+
+
+
 
 
     @Builder
-    public User(Long id, String email, String password, String name, boolean isOAuth, boolean privacyPolicyAgreed, LocalDateTime privacyPolicyAgreedAt,UserRoleEnum role ) {
+    public User(Long id, String email, String password, String name, boolean isOAuth, boolean privacyPolicyAgreed, LocalDate birthDate, boolean dataPolicyAgreed, boolean locationBasedServicesAgreed, LocalDateTime lastAgreedAt) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.name = name;
         this.isOAuth = isOAuth;
-        this.privacyPolicyAgreed = privacyPolicyAgreed;
-        this.privacyPolicyAgreedAt = privacyPolicyAgreedAt;
         this.role = UserRoleEnum.USER;
+        this.birthDate = birthDate;
+        this.privacyPolicyAgreed = privacyPolicyAgreed;
+        this.dataPolicyAgreed = dataPolicyAgreed;
+        this.locationBasedServicesAgreed = locationBasedServicesAgreed;
+        this.lastAgreedAt= LocalDateTime.now();
+
     }
 
     public void updateName(String name) {
@@ -67,9 +79,33 @@ public class User extends BaseEntity {
     }
 
 
+
+
+    //개인정보
     public void setPrivacyPolicyAgreed(boolean privacyPolicyAgreed) {
         this.privacyPolicyAgreed = privacyPolicyAgreed;
-        // 동의 상태에 따라 동의 시간을 현재 시간으로 설정하거나 null로 설정
-        this.privacyPolicyAgreedAt = privacyPolicyAgreed ? LocalDateTime.now() : null;
     }
+
+
+    public void setDataPolicyAgreed(boolean dataPolicyAgreed) {
+        this.dataPolicyAgreed = dataPolicyAgreed;
+    }
+
+    // 위치기반 서비스 동의 상태 설정
+    public void setLocationBasedServicesAgreed(boolean locationBasedServicesAgreed) {
+        this.locationBasedServicesAgreed = locationBasedServicesAgreed;
+    }
+
+
+
+    // 마지막으로 동의한 시각 설정
+    public void setLastAgreedAt(LocalDateTime lastAgreedAt) {
+        this.lastAgreedAt = lastAgreedAt;
+    }
+
+    public void setLastLoginAt(LocalDateTime now) {
+    this.lastLoginAt=now;
+    }
+
+
 }

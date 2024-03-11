@@ -18,7 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllByEmailAndState(String email, State state);
     List<User> findAllByState(State state);
 
-    @Query("SELECT u FROM User u WHERE u.privacyPolicyAgreed = :agreed AND u.privacyPolicyAgreedAt < :oneYearAgo")
-    List<User> findAllByPrivacyPolicyAgreedAndPrivacyPolicyAgreedAtBefore(@Param("agreed") boolean agreed, @Param("oneYearAgo") LocalDateTime oneYearAgo);
+    @Query("SELECT u FROM User u WHERE u.lastAgreedAt < :oneYearAgo AND u.dataPolicyAgreed = true AND u.locationBasedServicesAgreed = true")
+    List<User> findAllByLastAgreedAtBeforeAndDataPolicyAgreedTrueAndLocationBasedServicesAgreedTrue(@Param("oneYearAgo") LocalDateTime oneYearAgo);
 
 }
