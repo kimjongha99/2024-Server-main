@@ -37,6 +37,17 @@ public class UserService {
         if (!postUserReq.isPrivacyPolicyAgreed()) {
             throw new BaseException(PRIVACY_POLICY_AGREEMENT_REQUIRED);
         }
+
+        // 위치기반 서비스에 대한 동의 여부 확인
+        if (!postUserReq.isLocationBasedServicesAgreed()) {
+            throw new BaseException(LOCATION_BASED_SERVICES_AGREEMENT_REQUIRED);
+        }
+
+        // 데이터 정책에 대한 동의 여부 확인
+        if (!postUserReq.isDataPolicyAgreed()) {
+            throw new BaseException(DATA_POLICY_AGREEMENT_REQUIRED);
+        }
+
         //중복 체크
         Optional<User> checkUser = userRepository.findByEmailAndState(postUserReq.getEmail(), ACTIVE);
         if(checkUser.isPresent() == true){
@@ -120,6 +131,10 @@ public class UserService {
         }
 
         if(user.getPassword().equals(encryptPwd)){
+            user.setLastLoginAt(LocalDateTime.now());
+            userRepository.save(user); // 업데이트된 정보를 저장
+
+
             Long userId = user.getId();
             UserRoleEnum role = user.getRole();
             String jwt = jwtService.createJwt(userId,role);

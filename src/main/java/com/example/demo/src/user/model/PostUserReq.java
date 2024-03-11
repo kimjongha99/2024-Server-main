@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -17,18 +18,24 @@ public class PostUserReq {
     private String password;
     private String name;
 
+    private LocalDate birthDate;
     private boolean isOAuth;
 
     private boolean privacyPolicyAgreed;
+    private boolean locationBasedServicesAgreed;
+    private boolean dataPolicyAgreed;
+
 
     public User toEntity() {
         return User.builder()
                 .email(this.email)
                 .password(this.password)
                 .name(this.name)
+                .birthDate(this.birthDate)
                 .isOAuth(this.isOAuth)
                 .privacyPolicyAgreed(this.privacyPolicyAgreed)
-                .privacyPolicyAgreedAt(this.privacyPolicyAgreed ? LocalDateTime.now() : null)
+                .locationBasedServicesAgreed(this.locationBasedServicesAgreed)
+                .dataPolicyAgreed(this.dataPolicyAgreed)
                 .build();
     }
 }
