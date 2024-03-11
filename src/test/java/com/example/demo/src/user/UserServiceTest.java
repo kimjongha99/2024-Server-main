@@ -92,11 +92,34 @@ class UserServiceTest {
     void createUser_PrivacyPolicyNotAgreed_ThrowsException() {
         // Given
         LocalDate testBirthDate = LocalDate.of(1990, 1, 1); // 테스트용 생년월일
-        PostUserReq postUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, false, true, true, true);
+        PostUserReq postUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, false, false, true, true);
 
         // When & Then
         assertThrows(BaseException.class, () -> userService.createUser(postUserReq), "개인정보 처리방침에 대한 동의가 필요합니다.");
     }
+
+    @Test
+    @DisplayName("데이터 정책에 대한 동의 없는 경우")
+    void createUserLOCATION_DATA_POLICY_AGREEMENT_ThrowsException() {
+        // Given
+        LocalDate testBirthDate = LocalDate.of(1990, 1, 1); // 테스트용 생년월일
+        PostUserReq postUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, false, true, true, false);
+
+        // When & Then
+        assertThrows(BaseException.class, () -> userService.createUser(postUserReq), "개인정보 처리방침에 대한 동의가 필요합니다.");
+    }
+
+    @Test
+    @DisplayName("위치기반 서비스에 대한 동의  없는 경우")
+    void createUser_LOCATION_BASED_SERVICES_ThrowsException() {
+        // Given
+        LocalDate testBirthDate = LocalDate.of(1990, 1, 1); // 테스트용 생년월일
+        PostUserReq postUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, false, true, false, true);
+
+        // When & Then
+        assertThrows(BaseException.class, () -> userService.createUser(postUserReq), "개인정보 처리방침에 대한 동의가 필요합니다.");
+    }
+
 
     @Test
     @DisplayName("이미 존재하는 이메일로 사용자 생성 시도")
