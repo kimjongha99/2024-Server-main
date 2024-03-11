@@ -1,9 +1,11 @@
 package com.example.demo.src.user.entity;
 
 import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.common.enums.UserRoleEnum;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = false)
@@ -29,13 +31,31 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private boolean isOAuth;
 
+    @Column(name = "lastLoginAt")
+    private LocalDateTime lastLoginAt; //마지막 로그인
+
+    @Column(nullable = false)
+    private boolean privacyPolicyAgreed;  //사용자가 개인정보 처리방침에 동의했는지 여부
+
+    @Column(name = "privacyPolicyAgreedAt")
+    private LocalDateTime privacyPolicyAgreedAt; //사용자가 마지막으로 개인정보 처리방침에 동의한 날짜와 시간입니다. 이 필드는 사용자가 동의할 때마다 업데이트
+
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "role", columnDefinition = "VARCHAR(50)")
+    private UserRoleEnum role;
+
+
     @Builder
-    public User(Long id, String email, String password, String name, boolean isOAuth) {
+    public User(Long id, String email, String password, String name, boolean isOAuth, boolean privacyPolicyAgreed, LocalDateTime privacyPolicyAgreedAt,UserRoleEnum role ) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.name = name;
         this.isOAuth = isOAuth;
+        this.privacyPolicyAgreed = privacyPolicyAgreed;
+        this.privacyPolicyAgreedAt = privacyPolicyAgreedAt;
+        this.role = UserRoleEnum.USER;
     }
 
     public void updateName(String name) {
@@ -46,4 +66,10 @@ public class User extends BaseEntity {
         this.state = State.INACTIVE;
     }
 
+
+    public void setPrivacyPolicyAgreed(boolean privacyPolicyAgreed) {
+        this.privacyPolicyAgreed = privacyPolicyAgreed;
+        // 동의 상태에 따라 동의 시간을 현재 시간으로 설정하거나 null로 설정
+        this.privacyPolicyAgreedAt = privacyPolicyAgreed ? LocalDateTime.now() : null;
+    }
 }

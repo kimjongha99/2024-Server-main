@@ -33,9 +33,10 @@ dependencies {
     implementation ('org.projectlombok:lombok')
     compileOnly ('org.projectlombok:lombok:1.18.24')
     annotationProcessor ('org.projectlombok:lombok:1.18.24')
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
     // DB
-    runtimeOnly ('mysql:mysql-connector-java') //mysql8
+    runtimeOnly 'com.mysql:mysql-connector-j'
     //runtimeOnly 'mysql:mysql-connector-java:5.1.47' //mysql5
     implementation ('org.springframework.boot:spring-boot-starter-jdbc')
     implementation ('org.springframework.boot:spring-boot-starter-data-jpa')
@@ -56,9 +57,13 @@ dependencies {
     // Swagger
     implementation ('org.springdoc:springdoc-openapi-ui:1.6.14')
 
+    //jasypt
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
 
 }
 
+
 test {
     useJUnitPlatform()
+    systemProperty 'jasypt.encryptor.password', 'rlawhdgk'
 }

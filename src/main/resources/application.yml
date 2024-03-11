@@ -15,10 +15,9 @@ spring:
       platform: mysql
   datasource:
     url: jdbc:mysql://localhost:3306/demo?autoReconnect=true&setTimezone=Asia/Seoul # 변경해주세요
-    username: # username
-    password: # password
-    driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8버전
-    # driver-class-name: com.mysql.jdbc.Driver # mysql 5버전
+    username: ENC(nBr7+VNHjlPxo/dP9uQl+A==)
+    password: ENC(WQpiqtnC9XvJIImORru18rcPaE3YWI3O)
+    driver-class-name: com.mysql.cj.jdbc.Driver
   OAuth2:
     google:
       url: https://accounts.google.com/o/oauth2/v2/auth
@@ -27,7 +26,6 @@ spring:
       callback-login-url: http://localhost:9000/app/users/auth/google/login/callback # 등록한 정보에 맞게 수정해주세요
       scope: https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile # 등록한 정보에 맞게 수정해주세요
 
-spring.sql.init.platform: mysql
 server:
   port: 9000
 
@@ -47,7 +45,8 @@ springdoc:
     - /**
 
 jwt:
-  secret-key: UwKYibQQgkW7g-*k.ap9kje-wxBHb9wdXoBT4vnt4P3sJWt-Nu  # JWT key. 수정해주세요
+  secret-key: UwKYibQQgkW7g-*k.ap9kje-wxBHb9wdXoBT4vnt4P3sJWt-Nu  # JWT key.
+
 
 ---
 spring:
@@ -81,7 +80,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     generate-ddl: false
@@ -89,4 +88,5 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
 

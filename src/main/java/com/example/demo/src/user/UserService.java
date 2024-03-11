@@ -3,6 +3,7 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.common.entity.BaseEntity.State;
+import com.example.demo.common.enums.UserRoleEnum;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,6 +33,10 @@ public class UserService {
 
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) {
+        // 개인정보 처리방침에 대한 동의 여부 확인
+        if (!postUserReq.isPrivacyPolicyAgreed()) {
+            throw new BaseException(PRIVACY_POLICY_AGREEMENT_REQUIRED);
+        }
         //중복 체크
         Optional<User> checkUser = userRepository.findByEmailAndState(postUserReq.getEmail(), ACTIVE);
         if(checkUser.isPresent() == true){
@@ -54,7 +60,7 @@ public class UserService {
         User saveUser = userRepository.save(user);
 
         // JWT 발급
-        String jwtToken = jwtService.createJwt(saveUser.getId());
+        String jwtToken = jwtService.createJwt(saveUser.getId() , UserRoleEnum.USER);
         return new PostUserRes(saveUser.getId(), jwtToken);
 
     }
@@ -115,7 +121,8 @@ public class UserService {
 
         if(user.getPassword().equals(encryptPwd)){
             Long userId = user.getId();
-            String jwt = jwtService.createJwt(userId);
+            UserRoleEnum role = user.getRole();
+            String jwt = jwtService.createJwt(userId,role);
             return new PostLoginRes(userId,jwt);
         } else{
             throw new BaseException(FAILED_TO_LOGIN);
