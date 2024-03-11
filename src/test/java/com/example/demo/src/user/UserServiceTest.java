@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,7 +39,8 @@ class UserServiceTest {
     @DisplayName("유저 생성 성공 테스트")
     void createUser_success() throws Exception {
         // Given
-        PostUserReq postUserReq = new PostUserReq("user@example.com", "password", "Test User", false, true);
+        LocalDate testBirthDate = LocalDate.of(1990, 1, 1); // 테스트용 생년월일
+        PostUserReq postUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, false, true, true, true);
         String encryptedPassword = SHA256.encrypt(postUserReq.getPassword()); // // SHA256을 직접  처리
 
         // 빌더 패턴을 사용하여 mockUser 객체 생성, ID 값을 포함해 설정
@@ -89,7 +91,8 @@ class UserServiceTest {
     @DisplayName("유저 개인정보 처리방침 동의 없는 경우")
     void createUser_PrivacyPolicyNotAgreed_ThrowsException() {
         // Given
-        PostUserReq postUserReq = new PostUserReq("user@example.com", "password", "Test User", false, false);
+        LocalDate testBirthDate = LocalDate.of(1990, 1, 1); // 테스트용 생년월일
+        PostUserReq postUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, false, true, true, true);
 
         // When & Then
         assertThrows(BaseException.class, () -> userService.createUser(postUserReq), "개인정보 처리방침에 대한 동의가 필요합니다.");
@@ -99,7 +102,8 @@ class UserServiceTest {
     @DisplayName("이미 존재하는 이메일로 사용자 생성 시도")
     void createUser_ExistingEmail_ThrowsException() {
         // Given
-        PostUserReq secondUserReq = new PostUserReq("user@example.com", "password", "User Two", true, true);
+        LocalDate testBirthDate = LocalDate.of(1990, 1, 1); // 테스트용 생년월일
+        PostUserReq secondUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, false, true, true, true);
         User user = User.builder()
                 .email("example@example.com")
                 .password("password")
