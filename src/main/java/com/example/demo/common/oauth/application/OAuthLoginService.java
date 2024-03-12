@@ -27,12 +27,10 @@ public class OAuthLoginService {
         // 사용자 역할을 기반으로 JWT 생성
         String jwtToken = jwtService.createJwt(userId, UserRoleEnum.USER);
 
-
-        String accessToken = jwtToken;
         String tokenType = "Bearer";
 
         // GetSocialOAuthRes 객체를 생성하고 반환
-        return new GetSocialOAuthRes(jwtToken, userId, accessToken, tokenType);
+        return new GetSocialOAuthRes(userId,jwtToken, tokenType);
     }
 
 

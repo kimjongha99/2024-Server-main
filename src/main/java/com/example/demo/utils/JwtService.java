@@ -72,8 +72,8 @@ public class JwtService {
             throw new BaseException(INVALID_JWT);
         }
 
-        // 3. userIdx 추출
-        return claims.getBody().get("userId",Long.class);
+        // 3. userId 추출
+        return claims.getBody().get("userIdx", Long.class); // 'userId' 대신 'userIdx' 사용
     }
 
     /*

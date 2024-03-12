@@ -1,8 +1,10 @@
 package com.example.demo.src.user;
 
 
+import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.oauth.infra.kakao.KakaoLoginParams;
 import com.example.demo.common.oauth.application.OAuthLoginService;
+import com.example.demo.common.response.BaseResponseStatus;
 import com.example.demo.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,6 +16,7 @@ import com.example.demo.src.user.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -180,6 +183,40 @@ public class UserController {
         GetSocialOAuthRes tokens = oAuthLoginService.login(params);
         return new BaseResponse<>(tokens);
     }
+
+
+
+
+
+    /**
+     * 소셜로그인시 추가 정보 요청 API
+     * [POST] /app/users/login-add/:userId
+     *
+     * @return BaseResponse<String>
+     */
+    @Operation(summary = "소셜로그인 추가 정보입력",
+            description = "소셜로그인 때 추가정보가 없는 경우 추가정보 입력",
+            responses = {
+                    @ApiResponse(description = "성공", responseCode = "200", content = @Content(schema = @Schema(implementation = String.class))),
+                    @ApiResponse(description = "사용자를 찾을 수 없습니다", responseCode = "404"),
+                    @ApiResponse(description = "잘못된 요청", responseCode = "400")
+            })
+    @PostMapping("/login-add/{userId}")
+    public BaseResponse<String> addSocialLoginAdditionalInfo(@PathVariable Long userId, @RequestBody AdditionalInfo additionalInfo) {
+        // 토큰에서 userId 추출
+        Long tokenUserId = jwtService.getUserId();
+
+        // PathVariable의 userId와 토큰에서 추출한 userId 비교
+        if (!userId.equals(tokenUserId)) {
+            return new BaseResponse<>(NOT_FIND_USER);
+        }
+        userService.addAdditionalInfo(userId, additionalInfo);
+        String result = "소셜 추가정보 입력 완료!!";
+        return new BaseResponse<>(result);
+
+
+    }
+
 
 
 }

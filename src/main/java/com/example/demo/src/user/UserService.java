@@ -68,22 +68,6 @@ public class UserService {
     }
 
 
-    public PostUserRes createOAuthUser(User user) {
-        User saveUser = userRepository.save(user);
-
-        // JWT 발급
-        String jwtToken = jwtService.createJwt(saveUser.getId() , UserRoleEnum.USER);
-        return new PostUserRes(saveUser.getId(), jwtToken);
-
-    }
-
-
-
-
-
-
-
-
     public void modifyUserName(Long userId, PatchUserReq patchUserReq) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
@@ -156,5 +140,20 @@ public class UserService {
     public GetUserRes getUserByEmail(String email) {
         User user = userRepository.findByEmailAndState(email, ACTIVE).orElseThrow(() -> new BaseException(NOT_FIND_USER));
         return new GetUserRes(user);
+    }
+
+    public void addAdditionalInfo(Long userId, AdditionalInfo additionalInfo) {
+        // 1. 사용자 조회
+        User user = userRepository.findByIdAndState(userId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER)); // 사용자를 찾을 수 없을 때 예외 처리
+
+        user.setBirthDate(additionalInfo.getBirthDate());
+        user.setPrivacyPolicyAgreed(additionalInfo.isPrivacyPolicyAgreed());
+        user.setDataPolicyAgreed(additionalInfo.isDataPolicyAgreed());
+        user.setLocationBasedServicesAgreed(additionalInfo.isLocationBasedServicesAgreed());
+        user.setLastAgreedAt(LocalDateTime.now()); // 현재 시각을 마지막 동의 시각으로 설정
+        // 3. 업데이트된 사용자 정보 저장
+        userRepository.save(user);
+
     }
 }

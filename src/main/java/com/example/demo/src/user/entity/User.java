@@ -3,6 +3,7 @@ package com.example.demo.src.user.entity;
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.enums.OAuthProvider;
 import com.example.demo.common.enums.UserRoleEnum;
+import com.example.demo.src.user.model.AdditionalInfo;
 import lombok.*;
 
 import javax.persistence.*;
@@ -37,6 +38,7 @@ public class User extends BaseEntity {
     private boolean isOAuth;
 
     @Column(nullable = true)
+    @Enumerated(EnumType.STRING)
     private OAuthProvider oAuthProvider;
 
     @Column(name = "lastLoginAt")
@@ -118,6 +120,11 @@ public class User extends BaseEntity {
 
     public void setLastLoginAt(LocalDateTime now) {
     this.lastLoginAt=now;
+    }
+
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate= birthDate;
     }
 
 
