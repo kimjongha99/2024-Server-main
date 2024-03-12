@@ -1,6 +1,7 @@
 package com.example.demo.src.user.entity;
 
 import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.common.enums.OAuthProvider;
 import com.example.demo.common.enums.UserRoleEnum;
 import lombok.*;
 
@@ -35,6 +36,9 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private boolean isOAuth;
 
+    @Column(nullable = true)
+    private OAuthProvider oAuthProvider;
+
     @Column(name = "lastLoginAt")
     private LocalDateTime lastLoginAt; //마지막 로그인
     @Enumerated(value = EnumType.STRING)
@@ -50,6 +54,15 @@ public class User extends BaseEntity {
     @Column(name = "lastAgreedAt")
     private LocalDateTime lastAgreedAt; // 마지막으로 동의한 시각
 
+    @Builder(builderMethodName = "oauthBuilder")
+    public User(String email, String name, OAuthProvider oAuthProvider) {
+        this.email = email;
+        this.name = name;
+        this.password= "Kaka0Password";
+        this.isOAuth = true;
+        this.oAuthProvider = oAuthProvider;
+        this.role = UserRoleEnum.USER;
+    }
 
 
 

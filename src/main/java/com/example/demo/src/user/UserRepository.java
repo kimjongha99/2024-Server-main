@@ -20,5 +20,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.lastAgreedAt < :oneYearAgo AND u.dataPolicyAgreed = true AND u.locationBasedServicesAgreed = true")
     List<User> findAllByLastAgreedAtBeforeAndDataPolicyAgreedTrueAndLocationBasedServicesAgreedTrue(@Param("oneYearAgo") LocalDateTime oneYearAgo);
+    Optional<User> findByEmail(String email);
 
 }

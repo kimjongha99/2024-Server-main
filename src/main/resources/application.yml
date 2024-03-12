@@ -18,13 +18,14 @@ spring:
     username: ENC(nBr7+VNHjlPxo/dP9uQl+A==)
     password: ENC(WQpiqtnC9XvJIImORru18rcPaE3YWI3O)
     driver-class-name: com.mysql.cj.jdbc.Driver
-  OAuth2:
-    google:
-      url: https://accounts.google.com/o/oauth2/v2/auth
-      client-id: # client-id
-      client-secret:  # client-secret
-      callback-login-url: http://localhost:9000/app/users/auth/google/login/callback # 등록한 정보에 맞게 수정해주세요
-      scope: https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile # 등록한 정보에 맞게 수정해주세요
+
+oauth:
+  kakao:
+    client-id: ENC(05150IcDxE2oG/UDVdJw7xFL+wze7ggvnyHxOD9k95s01hLOTIFVQqBk0DasZi31)
+    url:
+      auth: https://kauth.kakao.com
+      api: https://kapi.kakao.com
+
 
 server:
   port: 9000

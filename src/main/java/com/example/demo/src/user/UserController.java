@@ -1,21 +1,19 @@
 package com.example.demo.src.user;
 
 
-import com.example.demo.common.Constant.SocialLoginType;
-import com.example.demo.common.oauth.OAuthService;
+import com.example.demo.common.oauth.infra.kakao.KakaoLoginParams;
+import com.example.demo.common.oauth.application.OAuthLoginService;
 import com.example.demo.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.user.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 
@@ -31,8 +29,7 @@ public class UserController {
 
     private final UserService userService;
 
-    private final OAuthService oAuthService;
-
+    private final OAuthLoginService oAuthLoginService;
     private final JwtService jwtService;
 
 
@@ -166,41 +163,22 @@ public class UserController {
     }
 
 
-    /**
-     * 유저 소셜 가입, 로그인 인증으로 리다이렉트 해주는 url
-     * [GET] /app/users/auth/:socialLoginType/login
-     * @return void
-     */
-    @Operation(summary = "소셜 로그인 리디렉션", description = "지정된 소셜 로그인 유형에 대한 소셜 로그인 페이지로 리디렉션됩니다.", responses = {
-            @ApiResponse(description = "Redirection successful", responseCode = "302"),
-            @ApiResponse(description = "Invalid social login type", responseCode = "400")
-    })
-    @GetMapping("/auth/{socialLoginType}/login")
-    public void socialLoginRedirect(@PathVariable(name="socialLoginType") String SocialLoginPath) throws IOException {
-        SocialLoginType socialLoginType= SocialLoginType.valueOf(SocialLoginPath.toUpperCase());
-        oAuthService.accessRequest(socialLoginType);
-    }
-
 
     /**
-     * Social Login API Server 요청에 의한 callback 을 처리
-     * @param socialLoginPath (GOOGLE, FACEBOOK, NAVER, KAKAO)
-     * @param code API Server 로부터 넘어오는 code
-     * @return SNS Login 요청 결과로 받은 Json 형태의 java 객체 (access_token, jwt_token, user_num 등)
+     * 카카오 로그인 API
+     * [POST] /app/users/kakao
+     * @param params 카카오 로그인 요청 파라미터
+     * @return BaseResponse<AuthTokens>
      */
-    @Operation(summary = "소셜 로그인 콜백 처리", description = "소셜 로그인 공급자의 콜백을 처리하고 사용자 토큰에 대한 코드를 교환합니다..", responses = {
-            @ApiResponse(description = "Successful operation", responseCode = "200", content = @Content(schema = @Schema(implementation = GetSocialOAuthRes.class))),
-            @ApiResponse(description = "Error during callback processing", responseCode = "500")
+    @Operation(summary = "카카오 로그인", description = "카카오 계정으로 로그인하고 토큰을 반환합니다.", responses = {
+            @ApiResponse(description = "성공", responseCode = "200", content = @Content(schema = @Schema(implementation = GetSocialOAuthRes.class))),
+            @ApiResponse(description = "잘못된 요청", responseCode = "400"),
+            @ApiResponse(description = "인증 실패", responseCode = "401")
     })
-    @ResponseBody
-    @GetMapping(value = "/auth/{socialLoginType}/login/callback")
-    public BaseResponse<GetSocialOAuthRes> socialLoginCallback(
-            @PathVariable(name = "socialLoginType") String socialLoginPath,
-            @RequestParam(name = "code") String code) throws IOException, BaseException{
-        log.info(">> 소셜 로그인 API 서버로부터 받은 code : {}", code);
-        SocialLoginType socialLoginType = SocialLoginType.valueOf(socialLoginPath.toUpperCase());
-        GetSocialOAuthRes getSocialOAuthRes = oAuthService.oAuthLoginOrJoin(socialLoginType,code);
-        return new BaseResponse<>(getSocialOAuthRes);
+    @PostMapping("/kakao")
+    public BaseResponse<GetSocialOAuthRes> loginKakao(@RequestBody KakaoLoginParams params) {
+        GetSocialOAuthRes tokens = oAuthLoginService.login(params);
+        return new BaseResponse<>(tokens);
     }
 
 

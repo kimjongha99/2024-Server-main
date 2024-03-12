@@ -67,6 +67,7 @@ public class UserService {
 
     }
 
+
     public PostUserRes createOAuthUser(User user) {
         User saveUser = userRepository.save(user);
 
@@ -75,6 +76,13 @@ public class UserService {
         return new PostUserRes(saveUser.getId(), jwtToken);
 
     }
+
+
+
+
+
+
+
 
     public void modifyUserName(Long userId, PatchUserReq patchUserReq) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
