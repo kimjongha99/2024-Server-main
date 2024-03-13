@@ -19,6 +19,10 @@ public enum BaseResponseStatus {
      */
 
     USERS_EMPTY_EMAIL(false, HttpStatus.BAD_REQUEST.value(), "이메일을 입력해주세요."),
+    POST_USERS_INVALID_PASSWORD(false, HttpStatus.BAD_REQUEST.value(), "비밀번호 길이 검사해주세요."),
+    POST_USERS_INVALID_NAME(false, HttpStatus.BAD_REQUEST.value(), "이름 유효성."),
+    POST_USERS_INVALID_BIRTHDATE(false, HttpStatus.BAD_REQUEST.value(), "생일 날짜 유효성 검사 해주세요."),
+
     TEST_EMPTY_COMMENT(false, HttpStatus.BAD_REQUEST.value(), "코멘트를 입력해주세요."),
     PRIVACY_POLICY_AGREEMENT_REQUIRED(false, HttpStatus.BAD_REQUEST.value(), "개인정보 처리방침 동의가 필요합니다."),
     LOCATION_BASED_SERVICES_AGREEMENT_REQUIRED(false, HttpStatus.BAD_REQUEST.value(), "위치기반 서비스에 동의가 필요합니다."),

@@ -27,15 +27,15 @@ public class PostUserReq {
 
 
     public User toEntity() {
-        return User.builder()
+        return User.userBuilder()
                 .email(this.email)
                 .password(this.password)
                 .name(this.name)
+                .isOAuth(false) // 일반 회원 가입의 경우, 이 값은 항상 false 여야 합니다.
                 .birthDate(this.birthDate)
-                .isOAuth(this.isOAuth)
                 .privacyPolicyAgreed(this.privacyPolicyAgreed)
-                .locationBasedServicesAgreed(this.locationBasedServicesAgreed)
                 .dataPolicyAgreed(this.dataPolicyAgreed)
+                .locationBasedServicesAgreed(this.locationBasedServicesAgreed)
                 .build();
     }
 }

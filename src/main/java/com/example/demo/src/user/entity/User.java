@@ -3,7 +3,6 @@ package com.example.demo.src.user.entity;
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.enums.OAuthProvider;
 import com.example.demo.common.enums.UserRoleEnum;
-import com.example.demo.src.user.model.AdditionalInfo;
 import lombok.*;
 
 import javax.persistence.*;
@@ -56,33 +55,30 @@ public class User extends BaseEntity {
     @Column(name = "lastAgreedAt")
     private LocalDateTime lastAgreedAt; // 마지막으로 동의한 시각
 
-    @Builder(builderMethodName = "oauthBuilder")
     public User(String email, String name, OAuthProvider oAuthProvider) {
         this.email = email;
         this.name = name;
-        this.password= "Kaka0Password";
-        this.isOAuth = true;
         this.oAuthProvider = oAuthProvider;
+        this.password = "Kaka0Password";
+        this.isOAuth = true;
         this.role = UserRoleEnum.USER;
     }
 
 
-
-
-    @Builder
-    public User(Long id, String email, String password, String name, boolean isOAuth, boolean privacyPolicyAgreed, LocalDate birthDate, boolean dataPolicyAgreed, boolean locationBasedServicesAgreed, LocalDateTime lastAgreedAt) {
-        this.id = id;
+    @Builder(builderMethodName = "userBuilder") // 일반 사용자 생성용 빌더
+    public User(String email, String password, String name, LocalDate birthDate, boolean isOAuth, boolean privacyPolicyAgreed, boolean dataPolicyAgreed, boolean locationBasedServicesAgreed) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.isOAuth = isOAuth;
-        this.role = UserRoleEnum.USER;
         this.birthDate = birthDate;
         this.privacyPolicyAgreed = privacyPolicyAgreed;
         this.dataPolicyAgreed = dataPolicyAgreed;
         this.locationBasedServicesAgreed = locationBasedServicesAgreed;
-        this.lastAgreedAt= LocalDateTime.now();
 
+        this.oAuthProvider=OAuthProvider.BASIC;
+        this.role = UserRoleEnum.USER;
+        this.lastAgreedAt = LocalDateTime.now(); // 이 필드는 마지막으로 동의한 시간을 현재 시간으로 설정합니다.
     }
 
     public void updateName(String name) {

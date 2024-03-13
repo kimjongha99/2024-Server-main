@@ -6,6 +6,7 @@ import com.example.demo.common.oauth.infra.kakao.KakaoLoginParams;
 import com.example.demo.common.oauth.application.OAuthLoginService;
 import com.example.demo.common.response.BaseResponseStatus;
 import com.example.demo.utils.JwtService;
+import com.example.demo.utils.ValidationRegex;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -50,12 +51,29 @@ public class UserController {
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
+        // 이메일이 null인지 체크
         if(postUserReq.getEmail() == null){
-            return new BaseResponse<>(USERS_EMPTY_EMAIL);
+            return new BaseResponse<>(USERS_EMPTY_EMAIL); // 적절한 에러 코드 상수를 사용하세요.
         }
-        //이메일 정규표현
-        if(!isRegexEmail(postUserReq.getEmail())){
-            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
+
+        // 이메일 유효성 검사
+        if(!ValidationRegex.isRegexEmail(postUserReq.getEmail())){
+            return new BaseResponse<>(POST_USERS_INVALID_EMAIL); // 적절한 에러 코드 상수를 사용하세요.
+        }
+
+        // 비밀번호 길이 검사
+        if(!ValidationRegex.isPasswordValid(postUserReq.getPassword())){
+            return new BaseResponse<>(POST_USERS_INVALID_PASSWORD); // 적절한 에러 코드 상수를 정의하고 사용하세요.
+        }
+
+        // 이름 유효성 검사
+        if(!ValidationRegex.isNameValid(postUserReq.getName())){
+            return new BaseResponse<>(POST_USERS_INVALID_NAME); // 적절한 에러 코드 상수를 정의하고 사용하세요.
+        }
+
+        // 생일 날짜 유효성 검사
+        if(!ValidationRegex.isBirthDateValid(postUserReq.getBirthDate().toString())){
+            return new BaseResponse<>(POST_USERS_INVALID_BIRTHDATE); // 적절한 에러 코드 상수를 정의하고 사용하세요.
         }
         PostUserRes postUserRes = userService.createUser(postUserReq);
         return new BaseResponse<>(postUserRes);

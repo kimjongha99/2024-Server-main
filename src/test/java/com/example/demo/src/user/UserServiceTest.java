@@ -44,14 +44,17 @@ class UserServiceTest {
         String encryptedPassword = SHA256.encrypt(postUserReq.getPassword()); // // SHA256을 직접  처리
 
         // 빌더 패턴을 사용하여 mockUser 객체 생성, ID 값을 포함해 설정
-        User mockUser = User.builder()
-                .id(1L) // mockUser에 ID 값 명시적으로 설정
+        User mockUser = User.userBuilder()
                 .email(postUserReq.getEmail())
                 .password(encryptedPassword)
                 .name(postUserReq.getName())
+                .birthDate(testBirthDate)
                 .isOAuth(postUserReq.isOAuth())
                 .privacyPolicyAgreed(postUserReq.isPrivacyPolicyAgreed())
+                .locationBasedServicesAgreed(postUserReq.isLocationBasedServicesAgreed())
+                .dataPolicyAgreed(postUserReq.isDataPolicyAgreed())
                 .build();
+
 
         when(userRepository.findByEmailAndState(postUserReq.getEmail(), User.State.ACTIVE)).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(mockUser); // Return mockUser
@@ -127,12 +130,16 @@ class UserServiceTest {
         // Given
         LocalDate testBirthDate = LocalDate.of(1990, 1, 1); // 테스트용 생년월일
         PostUserReq secondUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, false, true, true, true);
-        User user = User.builder()
+
+
+        User user = User.userBuilder()
                 .email("example@example.com")
                 .password("password")
                 .name("Test User")
                 .isOAuth(false)
                 .privacyPolicyAgreed(true)
+                .locationBasedServicesAgreed(true) // 누락된 필드 추가
+                .dataPolicyAgreed(true) // 누락된 필드 추가
                 .build();
         // 이미 존재하는 사용자를 나타내기 위해 userRepository.findByEmailAndState 모킹
         when(userRepository.findByEmailAndState(secondUserReq.getEmail(), User.State.ACTIVE))
