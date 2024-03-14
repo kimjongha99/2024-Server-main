@@ -1,5 +1,6 @@
 package com.example.demo.src.user;
 
+import com.example.demo.common.enums.UserState;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.PostUserReq;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
@@ -38,54 +40,39 @@ class UserServiceTest {
     @Test
     @DisplayName("유저 생성 성공 테스트")
     void createUser_success() throws Exception {
-        // Given
-        LocalDate testBirthDate = LocalDate.of(1990, 1, 1); // 테스트용 생년월일
-        PostUserReq postUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, false, true, true, true);
-        String encryptedPassword = SHA256.encrypt(postUserReq.getPassword()); // // SHA256을 직접  처리
+        // 입력 데이터 준비
+        LocalDate testBirthDate = LocalDate.of(1990, 1, 1);
+        String rawPassword = "password1";
+        String encryptedPassword = SHA256.encrypt(rawPassword); // 비밀번호를 미리 암호화
 
-        // 빌더 패턴을 사용하여 mockUser 객체 생성, ID 값을 포함해 설정
-        User mockUser = User.builder()
-                .id(1L) // mockUser에 ID 값 명시적으로 설정
-                .email(postUserReq.getEmail())
-                .password(encryptedPassword)
-                .name(postUserReq.getName())
-                .isOAuth(postUserReq.isOAuth())
-                .privacyPolicyAgreed(postUserReq.isPrivacyPolicyAgreed())
-                .build();
+        PostUserReq postUserReq = new PostUserReq("user@example.com", encryptedPassword, "Test User", testBirthDate, false, true, true, true);
 
-        when(userRepository.findByEmailAndState(postUserReq.getEmail(), User.State.ACTIVE)).thenReturn(Optional.empty());
-        when(userRepository.save(any(User.class))).thenReturn(mockUser); // Return mockUser
 
-        // When
+        // 모킹: 사용자 중복 체크 (없음을 가정)
+        when(userRepository.findByEmailAndState(postUserReq.getEmail(), UserState.ACTIVE)).thenReturn(Optional.empty());
+
+        // 사용자 저장을 위한 준비
+        User preparedUser = postUserReq.toEntity();
+        when(userRepository.save(any(User.class))).thenReturn(preparedUser);
+
+        // 메소드 실행
         PostUserRes postUserRes = userService.createUser(postUserReq);
 
-        // Then
+        // Then - 검증
         assertNotNull(postUserRes, "PostUserRes는 null이 아니어야 합니다.");
-        log.info("PostUserRes is not null.");
+        assertEquals(preparedUser.getId(), postUserRes.getId(), "생성된 사용자 ID는 저장된 User 객체의 ID와 일치해야 합니다.");
 
-        assertNotNull(postUserRes.getId(), "생성된 사용자 ID는 null이 아니어야 합니다.");
+        // UserRepository 메소드 호출 검증
+        verify(userRepository).findByEmailAndState(postUserReq.getEmail(), UserState.ACTIVE);
+        verify(userRepository).save(any(User.class));
 
-        assertEquals(mockUser.getId(), postUserRes.getId(), "PostUserRes 객체의 ID가 mockUser의 ID와 일치해야 합니다.");
-        log.info("PostUserRes ID matches mockUser ID: {}", postUserRes.getId());
-
-
-        // UserRepository의 findByEmailAndState 메소드가 정확한 인자로 호출되었는지 검증
-        verify(userRepository).findByEmailAndState(postUserReq.getEmail(), User.State.ACTIVE);
-        // UserRepository의 findByEmailAndState 메소드가 정확한 인자로 호출되었는지 검증
-        verify(userRepository).findByEmailAndState(postUserReq.getEmail(), User.State.ACTIVE);
-        // UserRepository의 save 메소드가 정확한 User 객체로 호출되었는지 검증
-        verify(userRepository).save(any(User.class)); // 더 구체적인 검증을 위해 any() 대신 eq(가상User)를 사용할 수도 있습니다.
-
-        // User 객체의 상태 검증
-        assertEquals(postUserReq.getEmail(), mockUser.getEmail(), "이메일이 일치해야 합니다.");
-        log.info("Email matches: {}", postUserReq.getEmail().equals(mockUser.getEmail()));
-
-        assertEquals(encryptedPassword, mockUser.getPassword(), "비밀번호가 암호화되어 저장되어야 합니다.");
-        assertEquals(postUserReq.getName(), mockUser.getName(), "이름이 일치해야 합니다.");
-        assertEquals(postUserReq.isOAuth(), mockUser.isOAuth(), "OAuth 상태가 일치해야 합니다.");
-        assertEquals(postUserReq.isPrivacyPolicyAgreed(), mockUser.isPrivacyPolicyAgreed(), "개인정보 처리방침 동의 상태가 일치해야 합니다.");
+        // 상태 검증
+        assertEquals(postUserReq.getEmail(), preparedUser.getEmail(), "이메일이 일치해야 합니다.");
+        assertEquals(encryptedPassword, preparedUser.getPassword(), "비밀번호가 암호화되어 저장되어야 합니다.");
+        assertEquals(postUserReq.getName(), preparedUser.getName(), "이름이 일치해야 합니다.");
+        assertEquals(postUserReq.isOAuth(), preparedUser.isOAuth(), "OAuth 상태가 일치해야 합니다.");
+        assertEquals(postUserReq.isPrivacyPolicyAgreed(), preparedUser.isPrivacyPolicyAgreed(), "개인정보 처리방침 동의 상태가 일치해야 합니다.");
     }
-
 
     @Test
     @DisplayName("유저 개인정보 처리방침 동의 없는 경우")
@@ -127,15 +114,19 @@ class UserServiceTest {
         // Given
         LocalDate testBirthDate = LocalDate.of(1990, 1, 1); // 테스트용 생년월일
         PostUserReq secondUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, false, true, true, true);
-        User user = User.builder()
+
+
+        User user = User.userBuilder()
                 .email("example@example.com")
                 .password("password")
                 .name("Test User")
                 .isOAuth(false)
                 .privacyPolicyAgreed(true)
+                .locationBasedServicesAgreed(true) // 누락된 필드 추가
+                .dataPolicyAgreed(true) // 누락된 필드 추가
                 .build();
         // 이미 존재하는 사용자를 나타내기 위해 userRepository.findByEmailAndState 모킹
-        when(userRepository.findByEmailAndState(secondUserReq.getEmail(), User.State.ACTIVE))
+        when(userRepository.findByEmailAndState(secondUserReq.getEmail(), UserState.ACTIVE))
                 .thenReturn(Optional.of(user)); // 수정된 부분: User 객체는 빌더를 사용하여 생성된 객체를 사용
         // When & Then
         BaseException thrown = assertThrows(BaseException.class, () -> userService.createUser(secondUserReq));

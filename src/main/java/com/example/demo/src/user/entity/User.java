@@ -1,12 +1,17 @@
 package com.example.demo.src.user.entity;
 
 import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.common.enums.OAuthProvider;
 import com.example.demo.common.enums.UserRoleEnum;
+import com.example.demo.common.enums.UserState;
+import com.example.demo.src.article.entity.Article;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = false)
@@ -35,11 +40,20 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private boolean isOAuth;
 
+    @Column(nullable = true)
+    @Enumerated(EnumType.STRING)
+    private OAuthProvider oAuthProvider;
+
     @Column(name = "lastLoginAt")
     private LocalDateTime lastLoginAt; //마지막 로그인
     @Enumerated(value = EnumType.STRING)
     @Column(name = "role", columnDefinition = "VARCHAR(50)")
     private UserRoleEnum role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state", nullable = false, length = 10)
+    protected UserState state = UserState.ACTIVE;
+
     @Column(nullable = false)
     private boolean privacyPolicyAgreed;  //사용자가 개인정보 처리방침에 동의했는지 여부
     @Column(nullable = false)
@@ -47,27 +61,37 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private boolean locationBasedServicesAgreed; // 위치기반 서비스 동의 필드
 
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Article> articles = new ArrayList<>();
+
     @Column(name = "lastAgreedAt")
     private LocalDateTime lastAgreedAt; // 마지막으로 동의한 시각
 
+    public User(String email, String name, OAuthProvider oAuthProvider) {
+        this.email = email;
+        this.name = name;
+        this.oAuthProvider = oAuthProvider;
+        this.password = "Kaka0Password";
+        this.isOAuth = true;
+        this.role = UserRoleEnum.USER;
+    }
 
 
-
-
-    @Builder
-    public User(Long id, String email, String password, String name, boolean isOAuth, boolean privacyPolicyAgreed, LocalDate birthDate, boolean dataPolicyAgreed, boolean locationBasedServicesAgreed, LocalDateTime lastAgreedAt) {
-        this.id = id;
+    @Builder(builderMethodName = "userBuilder") // 일반 사용자 생성용 빌더
+    public User(String email, String password, String name, LocalDate birthDate, boolean isOAuth, boolean privacyPolicyAgreed, boolean dataPolicyAgreed, boolean locationBasedServicesAgreed) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.isOAuth = isOAuth;
-        this.role = UserRoleEnum.USER;
         this.birthDate = birthDate;
         this.privacyPolicyAgreed = privacyPolicyAgreed;
         this.dataPolicyAgreed = dataPolicyAgreed;
         this.locationBasedServicesAgreed = locationBasedServicesAgreed;
-        this.lastAgreedAt= LocalDateTime.now();
 
+        this.oAuthProvider=OAuthProvider.BASIC;
+        this.role = UserRoleEnum.USER;
+        this.lastAgreedAt = LocalDateTime.now(); // 이 필드는 마지막으로 동의한 시간을 현재 시간으로 설정합니다.
     }
 
     public void updateName(String name) {
@@ -75,7 +99,7 @@ public class User extends BaseEntity {
     }
 
     public void deleteUser() {
-        this.state = State.INACTIVE;
+        this.state = UserState.INACTIVE;
     }
 
 
@@ -105,6 +129,11 @@ public class User extends BaseEntity {
 
     public void setLastLoginAt(LocalDateTime now) {
     this.lastLoginAt=now;
+    }
+
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate= birthDate;
     }
 
 

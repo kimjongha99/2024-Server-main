@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Main Page</title>
+</head>
+<body>
+<button id="kakao-login-btn">카카오 로그인</button>
+
+<script>
+  document.getElementById('kakao-login-btn').onclick = function() {
+    window.location.href = 'https://kauth.kakao.com/oauth/authorize?client_id=671b701e0dfa3a32eff7f2fecfaa3bdd&redirect_uri=http://localhost:9000/kakao/callback&response_type=code';
+  };
+</script>
+</body>
+</html>
