@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
+import static com.example.demo.common.enums.UserState.ACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.NOT_FIND_USER;
 
 @Service

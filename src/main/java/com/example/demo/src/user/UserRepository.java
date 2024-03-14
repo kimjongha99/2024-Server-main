@@ -1,5 +1,6 @@
 package com.example.demo.src.user;
 
+import com.example.demo.common.enums.UserState;
 import com.example.demo.src.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,10 +14,10 @@ import static com.example.demo.common.entity.BaseEntity.*;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findByIdAndState(Long id, State state);
-    Optional<User> findByEmailAndState(String email, State state);
-    List<User> findAllByEmailAndState(String email, State state);
-    List<User> findAllByState(State state);
+    Optional<User> findByIdAndState(Long id, UserState state);
+    Optional<User> findByEmailAndState(String email, UserState state);
+    List<User> findAllByEmailAndState(String email, UserState state);
+    List<User> findAllByState(UserState state);
 
     @Query("SELECT u FROM User u WHERE u.lastAgreedAt < :oneYearAgo AND u.dataPolicyAgreed = true AND u.locationBasedServicesAgreed = true")
     List<User> findAllByLastAgreedAtBeforeAndDataPolicyAgreedTrueAndLocationBasedServicesAgreedTrue(@Param("oneYearAgo") LocalDateTime oneYearAgo);

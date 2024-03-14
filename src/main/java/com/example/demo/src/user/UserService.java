@@ -2,7 +2,6 @@ package com.example.demo.src.user;
 
 
 
-import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.enums.UserRoleEnum;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.user.entity.User;
@@ -18,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
+import static com.example.demo.common.enums.UserState.ACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
 
 // Service Create, Update, Delete 의 로직 처리

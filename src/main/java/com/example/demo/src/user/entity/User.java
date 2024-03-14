@@ -3,11 +3,15 @@ package com.example.demo.src.user.entity;
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.enums.OAuthProvider;
 import com.example.demo.common.enums.UserRoleEnum;
+import com.example.demo.common.enums.UserState;
+import com.example.demo.src.article.entity.Article;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = false)
@@ -45,12 +49,21 @@ public class User extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "role", columnDefinition = "VARCHAR(50)")
     private UserRoleEnum role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state", nullable = false, length = 10)
+    protected UserState state = UserState.ACTIVE;
+
     @Column(nullable = false)
     private boolean privacyPolicyAgreed;  //사용자가 개인정보 처리방침에 동의했는지 여부
     @Column(nullable = false)
     private boolean dataPolicyAgreed; // 데이터 정책 동의 필드
     @Column(nullable = false)
     private boolean locationBasedServicesAgreed; // 위치기반 서비스 동의 필드
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Article> articles = new ArrayList<>();
 
     @Column(name = "lastAgreedAt")
     private LocalDateTime lastAgreedAt; // 마지막으로 동의한 시각
@@ -86,7 +99,7 @@ public class User extends BaseEntity {
     }
 
     public void deleteUser() {
-        this.state = State.INACTIVE;
+        this.state = UserState.INACTIVE;
     }
 
 
