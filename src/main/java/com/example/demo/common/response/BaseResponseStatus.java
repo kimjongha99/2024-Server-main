@@ -17,7 +17,11 @@ public enum BaseResponseStatus {
     /**
      * 400 : Request, Response 오류
      */
+    POST_ARTICLES_INVALID_CONTENT(false,HttpStatus.BAD_REQUEST.value(),"내용이 1자 100자이내여야합니다"),
 
+    INVALID_USER_ACCESS(false,HttpStatus.BAD_REQUEST.value(),"이미지 개수가 초과했습니다."),
+
+    POST_ARTICLES_EXCEEDS_IMAGE_LIMIT(false,HttpStatus.BAD_REQUEST.value(),"토큰과 유저가 일치하지않습니다"),
     USERS_EMPTY_EMAIL(false, HttpStatus.BAD_REQUEST.value(), "이메일을 입력해주세요."),
     POST_USERS_INVALID_PASSWORD(false, HttpStatus.BAD_REQUEST.value(), "비밀번호 길이 검사해주세요."),
     POST_USERS_INVALID_NAME(false, HttpStatus.BAD_REQUEST.value(), "이름 유효성."),

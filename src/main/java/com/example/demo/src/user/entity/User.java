@@ -62,7 +62,7 @@ public class User extends BaseEntity {
     private boolean locationBasedServicesAgreed; // 위치기반 서비스 동의 필드
 
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Article> articles = new ArrayList<>();
 
     @Column(name = "lastAgreedAt")
