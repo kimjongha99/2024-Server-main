@@ -45,6 +45,8 @@ public class Article extends BaseEntity {
 
     @ElementCollection
     private List<String> images = new ArrayList<>();
+    @ElementCollection
+    private List<String> videos = new ArrayList<>();
 
 
 
@@ -63,11 +65,19 @@ public class Article extends BaseEntity {
 
 
     @Builder
-    public Article(String content, User author, List<String> images, ArticleStatus status) {
+    public Article(String content, User author, List<String> images,List<String> videos, ArticleStatus status) {
         this.content = content;
         this.author = author;
         this.images = images;
         this.status = status;
+        this.videos= videos;
+    }
+    // Setter 메서드 수동 추가
+    public void setContent(String content) {
+        this.content = content;
     }
 
+    public void setImages(List<String> images) {
+        this.images = images;
+    }
 }

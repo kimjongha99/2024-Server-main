@@ -29,11 +29,13 @@ public class PostArticleReq {
 
     List<String> images;
 
+    List<String> videos;
     public Article toEntity(User author) {
         return Article.builder()
                 .author(author)
                 .content(this.content)
                 .images(this.images)
+                .videos(this.videos)
                 .status(ArticleStatus.ACTIVE) // Assuming ACTIVE is a default status
                 .build();
     }
