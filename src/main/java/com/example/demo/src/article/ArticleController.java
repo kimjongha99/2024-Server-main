@@ -4,6 +4,7 @@ import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.article.model.PatchArticleReq;
 import com.example.demo.src.article.model.PostArticleReq;
 import com.example.demo.src.article.model.PostArticleRes;
+import com.example.demo.src.article.model.PostReportReq;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.ValidationUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,7 +63,15 @@ public class ArticleController {
     }
 
 
-
+    /**
+     * 게시글 수정 API
+     * [Patch] /app/articles/{id}
+     * @return BaseResponse<String>
+     */
+    @Operation(summary = "게시글 수정", description = "게시글을 수정합니다.", responses = {
+            @ApiResponse(description = "성공", responseCode = "200", content = @Content(schema = @Schema(implementation = PatchArticleReq.class))),
+            @ApiResponse(description = "실패", responseCode = "400"),
+    })
     @PatchMapping("/{id}")
     public BaseResponse<String> updateArticle(
             @RequestBody PatchArticleReq patchArticleReq,
@@ -71,20 +80,39 @@ public class ArticleController {
         try {
             // 토큰에서 사용자 ID 추출
             Long jwtUserId = jwtService.getUserId();
-
-
             String result = articleService.patchArticle(patchArticleReq,jwtUserId,id);
-
             return  new BaseResponse<>(result);
         }catch (Exception e) {
             // 예상치 못한 예외 처리
             return new BaseResponse<>(UNEXPECTED_ERROR);
         }
-
-
     }
 
+    /**
+     * 게시글 신고 API
+     * [Post] /app/articles/{id}
+     * @return BaseResponse<String>
+     */
+    @Operation(summary = "게시글 신고", description = "게시글  신고합니다.", responses = {
+            @ApiResponse(description = "성공", responseCode = "200", content = @Content(schema = @Schema(implementation = PatchArticleReq.class))),
+            @ApiResponse(description = "실패", responseCode = "400"),
+    })
+    @PostMapping("/reports/{id}")
+    public BaseResponse<String> reportArticle(
+            @PathVariable Long id,
+            @RequestBody PostReportReq postReportReq
+    ){
+        try {
+            // 토큰에서 사용자 ID 추출
+            Long jwtUserId = jwtService.getUserId();
 
+            String result = articleService.reportArticle(jwtUserId,id,postReportReq);
+            return  new BaseResponse<>(result);
+        }catch (Exception e) {
+            // 예상치 못한 예외 처리
+            return new BaseResponse<>(UNEXPECTED_ERROR);
+        }
+    }
 
 
 

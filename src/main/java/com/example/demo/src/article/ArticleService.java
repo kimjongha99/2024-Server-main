@@ -2,10 +2,13 @@ package com.example.demo.src.article;
 
 import com.example.demo.common.enums.ArticleStatus;
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.common.response.BaseResponseStatus;
 import com.example.demo.src.article.entity.Article;
 import com.example.demo.src.article.model.PatchArticleReq;
 import com.example.demo.src.article.model.PostArticleReq;
 import com.example.demo.src.article.model.PostArticleRes;
+import com.example.demo.src.article.model.PostReportReq;
+import com.example.demo.src.report.entity.Report;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +52,7 @@ public class ArticleService {
 
         }
     }
+
     @Transactional
     public String patchArticle(PatchArticleReq patchArticleReq, Long jwtUserId, Long articleId) {
         try {
@@ -69,6 +73,9 @@ public class ArticleService {
             if (patchArticleReq.getImages() != null && !patchArticleReq.getImages().isEmpty()) {
                 article.setImages(patchArticleReq.getImages());
             }
+            if (patchArticleReq.getVideos() != null && !patchArticleReq.getVideos().isEmpty()) {
+                article.setVideos(patchArticleReq.getVideos());
+            }
 
             articleRepository.save(article); // 변경 사항 저장
 
@@ -83,4 +90,38 @@ public class ArticleService {
 
     }
 
+
+    @Transactional
+    public String reportArticle(Long jwtUserId, Long articleId, PostReportReq postReportReq) {
+        try {
+            // 게시물 조회
+            Article article = articleRepository.findByIdAndStatus(articleId, ArticleStatus.ACTIVE)
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.ARTICLE_NOT_FOUND));
+
+            // 신고자 조회
+            User reporter = userRepository.findByIdAndState(jwtUserId, ACTIVE)
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NOT_FOUND));
+
+            // 게시물의 신고 횟수 증가
+            article.setReportCount(article.getReportCount() + 1);
+
+            // 신고 내역 저장
+            Report report = Report.builder()
+                    .article(article)
+                    .reporter(reporter)
+                    .reason(postReportReq.getReason())
+                    .build();
+
+            article.getReports().add(report);
+            articleRepository.save(article);
+
+            return "게시물이 성공적으로 신고되었습니다.";
+
+        } catch (
+                DataAccessException e) {
+            throw new BaseException(DATABASE_ERROR); // 데이터베이스 접근 예외 처리
+
+        }
+
+    }
 }

@@ -28,7 +28,7 @@ public class Article extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ArticleStatus status; // 예: ACTIVE, INACTIVE, DELETED 등
+    private ArticleStatus status; // 예:활성, 비활성, 삭제됨 등
 
     @Column(nullable = false)
     private int reportCount = 0; // 신고 수, 기본값 0
@@ -79,5 +79,17 @@ public class Article extends BaseEntity {
 
     public void setImages(List<String> images) {
         this.images = images;
+    }
+
+    public void setVideos(List<String> videos) {
+        this.videos=videos;
+    }
+
+    public void setReportCount(int i) {
+        this.reportCount+=i;
+    }
+
+    public void setStatus(ArticleStatus inactive) {
+        this.status= inactive;
     }
 }

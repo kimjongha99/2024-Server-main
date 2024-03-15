@@ -62,7 +62,9 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_MEMO(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"메모 수정 실패"),
 
     UNEXPECTED_ERROR(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "예상치 못한 에러가 발생했습니다."),
-    ARTICLE_NOT_FOUND_OR_INACTIVE(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "기사를 찾을 수 없거나 비활성화되었습니다..");
+    ARTICLE_NOT_FOUND_OR_INACTIVE(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "기사를 찾을 수 없거나 비활성화되었습니다.."),
+    ARTICLE_NOT_FOUND(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "기사를 찾을 수 없습니다"),
+    USER_NOT_FOUND(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "유저를 찾을 수 없습니다");
 
 
     private final boolean isSuccess;
