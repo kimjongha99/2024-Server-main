@@ -85,8 +85,8 @@ public class Article extends BaseEntity {
         this.videos=videos;
     }
 
-    public void setReportCount(int i) {
-        this.reportCount+=i;
+    public void setReportCount() {
+        this.reportCount+=1;
     }
 
     public void setStatus(ArticleStatus inactive) {

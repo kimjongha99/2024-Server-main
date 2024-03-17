@@ -28,6 +28,7 @@ dependencies {
 
     // Spring Boot Starter
     testImplementation ('org.springframework.boot:spring-boot-starter-test')
+    implementation 'org.springframework.boot:spring-boot-starter'
 
     // Lombok
     implementation ('org.projectlombok:lombok')
@@ -63,6 +64,7 @@ dependencies {
     //타임리프
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
+    testImplementation 'org.awaitility:awaitility:3.1.2'
 
 }
 

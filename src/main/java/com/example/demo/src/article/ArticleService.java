@@ -103,7 +103,12 @@ public class ArticleService {
                     .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NOT_FOUND));
 
             // 게시물의 신고 횟수 증가
-            article.setReportCount(article.getReportCount() + 1);
+            article.setReportCount();
+
+            // 신고 횟수가 10 이상인 경우, 게시물 상태를 비활성화로 변경
+            if (article.getReportCount() >= 10) {
+                article.setStatus(ArticleStatus.INACTIVE); // ArticleStatus.INACTIVE 가정
+            }
 
             // 신고 내역 저장
             Report report = Report.builder()
