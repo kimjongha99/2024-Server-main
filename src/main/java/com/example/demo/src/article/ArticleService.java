@@ -4,18 +4,22 @@ import com.example.demo.common.enums.ArticleStatus;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.response.BaseResponseStatus;
 import com.example.demo.src.article.entity.Article;
-import com.example.demo.src.article.model.PatchArticleReq;
-import com.example.demo.src.article.model.PostArticleReq;
-import com.example.demo.src.article.model.PostArticleRes;
-import com.example.demo.src.article.model.PostReportReq;
+import com.example.demo.src.article.model.*;
 import com.example.demo.src.report.entity.Report;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.demo.common.enums.UserState.ACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
@@ -128,5 +132,33 @@ public class ArticleService {
 
         }
 
+    }
+
+
+    /**
+     * 페이징 처리하여 게시글 목록 조회
+     * @param page 페이지 번호 (0부터 시작)
+     * @param size 페이지 당 게시글 수
+     * @return 게시글 목록
+     */
+    @Transactional(readOnly = true)
+
+    public List<GetArticlePreviewRes> findAllBySearch(int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Article> articlePage = articleRepository.findAllByStatus(ArticleStatus.ACTIVE, pageable);
+
+            return articlePage.stream()
+                    .map(article -> new GetArticlePreviewRes(
+                            article.getId(),
+                            article.getContent(), // 예시에서는 title 필드가 없으므로 content를 제목으로 가정
+                            article.getContent().substring(0, Math.min(article.getContent().length(), 100)), // 내용 미리보기
+                            article.getAuthor().getName(),
+                            article.getImages()
+                    ))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR); // 적절한 예외 처리
+        }
     }
 }

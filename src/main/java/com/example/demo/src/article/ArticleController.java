@@ -1,10 +1,7 @@
 package com.example.demo.src.article;
 
 import com.example.demo.common.response.BaseResponse;
-import com.example.demo.src.article.model.PatchArticleReq;
-import com.example.demo.src.article.model.PostArticleReq;
-import com.example.demo.src.article.model.PostArticleRes;
-import com.example.demo.src.article.model.PostReportReq;
+import com.example.demo.src.article.model.*;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.ValidationUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.example.demo.common.response.BaseResponseStatus.*;
 
@@ -114,7 +113,23 @@ public class ArticleController {
         }
     }
 
-
-
+    /**
+     * 게시글 목록 조회 API (무한 스크롤 지원)
+     * [GET] /app/articles?page=&size=
+     * @param page 페이지 번호 (0부터 시작)
+     * @param size 페이지 당 게시글 수
+     * @return BaseResponse<List<GetArticlePreviewRes>>
+     */
+    @GetMapping("/articles")
+    public BaseResponse<List<GetArticlePreviewRes>> findPostByPaging(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        try {
+            List<GetArticlePreviewRes> articlePreviews = articleService.findAllBySearch(page, size);
+            return new BaseResponse<>(articlePreviews);
+        } catch (Exception e) {
+            return new BaseResponse<>(UNEXPECTED_ERROR); // Make sure to define this error code appropriately
+        }
+    }
 
 }
