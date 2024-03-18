@@ -54,7 +54,6 @@ public class PaymentsService {
                     .buyerTel(payment.getBuyerTel())
                     .buyerAddr(payment.getBuyerAddr())
                     .buyerPostcode(payment.getBuyerPostcode())
-                    .status(payment.getStatus())
                     .user(user)
                     .build();
             paymentRepository.save(newPayment);
