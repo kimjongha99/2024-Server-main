@@ -7,8 +7,9 @@ plugins {
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
-sourceCompatibility = 10
-targetCompatibility = 10
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -20,6 +21,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -28,6 +30,7 @@ dependencies {
 
     // Spring Boot Starter
     testImplementation ('org.springframework.boot:spring-boot-starter-test')
+    implementation 'org.springframework.boot:spring-boot-starter'
 
     // Lombok
     implementation ('org.projectlombok:lombok')
@@ -63,6 +66,12 @@ dependencies {
     //타임리프
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
+    testImplementation 'org.awaitility:awaitility:3.1.2'
+
+    // jsch
+    implementation ('com.jcraft:jsch:0.1.55')
+    // iamport
+    implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'
 
 }
 

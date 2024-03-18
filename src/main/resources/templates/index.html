@@ -3,14 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <title>Main Page</title>
+  <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <!-- iamport.payment.js -->
+  <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 <body>
-<button id="kakao-login-btn">카카오 로그인</button>
+<button id="kakao-login-btn">카카오 로그인</button><br/>
+구독금액: <input type="text" id="amount" value="10000" readonly /><br/>
+이메일: <input type="text" id="buyer_email" /><br/>
+이름: <input type="text" id="buyer_name" /><br/>
+전화번호: <input type="text" id="buyer_tel" /><br/>
+주소: <input type="text" id="buyer_addr" /><br/>
+우편번호: <input type="text" id="buyer_postcode" /><br/>
+<button onclick="fillRandomValues()">랜덤 값 집어넣기</button><br/>
+<button onclick="requestPay()">결제하기</button>
 
 <script>
   document.getElementById('kakao-login-btn').onclick = function() {
-    window.location.href = 'https://kauth.kakao.com/oauth/authorize?client_id=671b701e0dfa3a32eff7f2fecfaa3bdd&redirect_uri=http://localhost:9000/kakao/callback&response_type=code';
+    window.location.href = 'https://kauth.kakao.com/oauth/authorize?client_id=YOUR_KAKAO_APP_KEY&redirect_uri=http://localhost:9000/kakao/callback&response_type=code';
   };
+
+  function requestPay() {
+    const myAmount = Number(document.getElementById("amount").value);
+    const IMP = window.IMP;
+    IMP.init("imp01568033");
+
+    const buyerEmail = document.getElementById("buyer_email").value;
+    const buyerName = document.getElementById("buyer_name").value;
+    const buyerTel = document.getElementById("buyer_tel").value;
+    const buyerAddr = document.getElementById("buyer_addr").value;
+    const buyerPostcode = document.getElementById("buyer_postcode").value;
+
+    IMP.request_pay({
+      pg: "kakaopay",
+      pay_method: "card",
+      merchant_uid: 'merchant_' + new Date().getTime(),
+      name: "주문명:구독서비스",
+      amount: myAmount,
+      buyer_email: buyerEmail,
+      buyer_name: buyerName,
+      buyer_tel: buyerTel,
+      buyer_addr: buyerAddr,
+      buyer_postcode: buyerPostcode
+    }, function (rsp) {
+      if (rsp.success) {
+        alert("결제 성공! impUid: " + rsp.imp_uid);
+      } else {
+        alert(rsp.error_msg);
+      }
+    });
+  }
+
+  function fillRandomValues() {
+    document.getElementById("buyer_email").value = `gildong${Math.floor(Math.random() * 100)}@example.com`;
+    document.getElementById("buyer_name").value = `홍길동${Math.floor(Math.random() * 100)}`;
+    document.getElementById("buyer_tel").value = `010-${Math.floor(Math.random() * 10000)}-${Math.floor(Math.random() * 10000)}`;
+    document.getElementById("buyer_addr").value = `서울특별시 강남구 신사동 ${Math.floor(Math.random() * 100)}번지`;
+    document.getElementById("buyer_postcode").value = `${Math.floor(Math.random() * 90000) + 10000}`;
+  }
 </script>
 </body>
 </html>

@@ -18,6 +18,16 @@ spring:
     username: ENC(nBr7+VNHjlPxo/dP9uQl+A==)
     password: ENC(WQpiqtnC9XvJIImORru18rcPaE3YWI3O)
     driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    root: INFO # 전체 애플리케이션 로그 레벨 설정
+
 
 oauth:
   kakao:
@@ -47,6 +57,12 @@ springdoc:
 
 jwt:
   secret-key: UwKYibQQgkW7g-*k.ap9kje-wxBHb9wdXoBT4vnt4P3sJWt-Nu  # JWT key.
+
+imp:
+  code: ENC(OFOYhyrMEiMV8InF+OvGj1EYAZi0dGHW)
+  api-key: ENC(5tlX7Yp+UFOkB9F0OljIwY5D2calPkORIyDZ/n5Vxxc=)
+  secret-key: ENC(egcFeWf2smPT/gINmWTvXoOoHPyQ1u4U9CQOqQibkJXxXKheNl9jPI2+m3B/4VhjoOip+ehziz0gJteaAKho3yhyM0xz4eidnDg6ust3KQO4P+zC5on3DdVTl77oPVxd)
+
 
 
 ---
@@ -81,10 +97,10 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    generate-ddl: false
+    generate-ddl: true
     show-sql: true
     properties:
       hibernate:
