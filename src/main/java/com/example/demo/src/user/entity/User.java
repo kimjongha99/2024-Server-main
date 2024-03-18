@@ -5,6 +5,8 @@ import com.example.demo.common.enums.OAuthProvider;
 import com.example.demo.common.enums.UserRoleEnum;
 import com.example.demo.common.enums.UserState;
 import com.example.demo.src.article.entity.Article;
+import com.example.demo.src.payment.entity.Payments;
+import com.example.demo.src.payment.entity.Subscription;
 import lombok.*;
 
 import javax.persistence.*;
@@ -67,6 +69,14 @@ public class User extends BaseEntity {
 
     @Column(name = "lastAgreedAt")
     private LocalDateTime lastAgreedAt; // 마지막으로 동의한 시각
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payments> payments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Subscription> subscriptions = new ArrayList<>();
+
 
     public User(String email, String name, OAuthProvider oAuthProvider) {
         this.email = email;
@@ -137,4 +147,8 @@ public class User extends BaseEntity {
     }
 
 
+    public void addSubscribe(Subscription subscription, Payments payments) {
+        this.subscriptions.add(subscription);
+        this.payments.add(payments);
+    }
 }

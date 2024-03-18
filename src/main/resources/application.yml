@@ -58,6 +58,12 @@ springdoc:
 jwt:
   secret-key: UwKYibQQgkW7g-*k.ap9kje-wxBHb9wdXoBT4vnt4P3sJWt-Nu  # JWT key.
 
+imp:
+  code: ENC(OFOYhyrMEiMV8InF+OvGj1EYAZi0dGHW)
+  api-key: ENC(5tlX7Yp+UFOkB9F0OljIwY5D2calPkORIyDZ/n5Vxxc=)
+  secret-key: ENC(egcFeWf2smPT/gINmWTvXoOoHPyQ1u4U9CQOqQibkJXxXKheNl9jPI2+m3B/4VhjoOip+ehziz0gJteaAKho3yhyM0xz4eidnDg6ust3KQO4P+zC5on3DdVTl77oPVxd)
+
+
 
 ---
 spring:

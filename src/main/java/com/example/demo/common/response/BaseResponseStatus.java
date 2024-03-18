@@ -64,7 +64,22 @@ public enum BaseResponseStatus {
     UNEXPECTED_ERROR(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "예상치 못한 에러가 발생했습니다."),
     ARTICLE_NOT_FOUND_OR_INACTIVE(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "기사를 찾을 수 없거나 비활성화되었습니다.."),
     ARTICLE_NOT_FOUND(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "기사를 찾을 수 없습니다"),
-    USER_NOT_FOUND(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "유저를 찾을 수 없습니다");
+    USER_NOT_FOUND(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "유저를 찾을 수 없습니다"),
+
+    ALREADY_EXIST_PAYMENT(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제정보를 찾을수없습니다." ),
+
+
+
+    INVALID_PAYMENT(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제정보를 찾을수없습니다." ),
+    NOT_FOUND_USER(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제정보를 찾을수없습니다." ),
+    NOT_FOUND_PAYMENT(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제정보를 찾을수없습니다." ),
+    FAILED_TO_SUBSCRIBE(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제정보를 찾을수없습니다." ),
+    NOT_FOUND_SUBSCRIBE(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제정보를 찾을수없습니다." ),
+    FAILED_TO_CANCEL_SUBSCRIBE(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제정보를 찾을수없습니다." ),
+
+    FAILED_TO_CANCEL_PAYMENT(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제정보를 찾을수없습니다." ),
+    FAILED_TO_PAYMENT(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제정보를 찾을수없습니다 "),
+    PAYMENT_VERIFICATION_FAILED(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제정보를 찾을수없습니다 " );
 
 
     private final boolean isSuccess;
