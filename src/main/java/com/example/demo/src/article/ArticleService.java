@@ -197,5 +197,23 @@ public class ArticleService {
         articleRepository.save(article); // Article의 변경 사항 저장
     }
 
+    @Transactional(readOnly = true)
+    public GetArticleRes getArticleById(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new BaseException(ARTICLE_NOT_FOUND)); // 게시글을 찾을 수 없는 경우 예외 처리
+
+        // Article 엔티티를 GetArticleRes DTO로 변환합니다.
+        GetArticleRes articleRes = new GetArticleRes(
+                article.getId(),
+                article.getContent(),
+                article.getStatus(),
+                article.getReportCount(),
+                article.getFavoriteCount(),
+                article.getAuthor().getName(),
+                article.getImages(),
+                article.getVideos()
+        );
+        return articleRes;
+    }
 
 }
