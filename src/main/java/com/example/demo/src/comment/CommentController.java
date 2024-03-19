@@ -3,7 +3,9 @@ package com.example.demo.src.comment;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.comment.model.CreateCommentReq;
 import com.example.demo.src.comment.model.CreateCommentRes;
+import com.example.demo.src.comment.model.UpdateCommentReq;
 import com.example.demo.utils.JwtService;
+import com.example.demo.utils.ValidationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import static com.example.demo.common.response.BaseResponseStatus.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,12 +34,16 @@ public class CommentController {
                     @ApiResponse(description = "실패", responseCode = "400")
             })
     public BaseResponse<CreateCommentRes> createComment(@RequestBody CreateCommentReq createCommentReq) {
+        if(!ValidationUtils.isCommentLengthValid(createCommentReq.getContent())){
+            return  new BaseResponse<>(CREATE_COMMENT_INVALID_CONTENT);
+        }
+
         Long jwtUserId = jwtService.getUserId();
         CreateCommentRes result = commentService.createComment(createCommentReq, jwtUserId);
         return new BaseResponse<>(result);
     }
 
-//
+
 //    // 댓글 수정
 //    @PatchMapping("/{commentId}")
 //    @Operation(summary = "댓글 수정", description = "특정 댓글을 수정합니다.",
@@ -50,7 +57,7 @@ public class CommentController {
 //        commentService.updateComment(commentId, updateCommentReq, jwtUserId);
 //        return new BaseResponse<>("댓글이 수정되었습니다.");
 //    }
-//
+
 //    // 댓글 삭제
 //    @DeleteMapping("/{commentId}")
 //    @Operation(summary = "댓글 삭제", description = "특정 댓글을 삭제합니다.",

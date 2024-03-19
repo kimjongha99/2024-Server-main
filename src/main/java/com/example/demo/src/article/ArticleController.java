@@ -44,7 +44,7 @@ public class ArticleController {
     @PostMapping("")
     public BaseResponse<PostArticleRes> createArticle(@RequestBody PostArticleReq postArticleReq) {
 
-            if (!ValidationUtils.isContentLengthValid(postArticleReq.getContent())) {
+        if (!ValidationUtils.isContentLengthValid(postArticleReq.getContent())) {
             return new BaseResponse<>(POST_ARTICLES_INVALID_CONTENT); // 적절한 에러 코드 상수 사용
         }
 

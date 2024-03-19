@@ -12,4 +12,9 @@ public class ValidationUtils {
     public static boolean isImageCountValid(List<?> images) {
         return images != null && images.size() <= 10;
     }
+
+    public static boolean isCommentLengthValid(String content) {
+        return content != null && content.length() >= 1 && content.length() <= 50;
+
+    }
 }
