@@ -85,22 +85,7 @@ public class CommentService {
     public GetCommentRes getCommentsByArticle(Long articleId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Comment> commentsPage = commentRepository.findByArticleId(articleId, pageable);
-
-        List<CommentInfo> commentInfos = commentsPage.getContent().stream()
-                .map(comment -> new CommentInfo(
-                        comment.getId(),
-                        comment.getContent(),
-                        comment.getUser().getId(),
-                        comment.getUser().getName()))
-                .collect(Collectors.toList());
-
-        return new GetCommentRes(
-                commentInfos,
-                commentInfos.size(),
-                commentsPage.getTotalPages(),
-                commentsPage.getTotalElements(),
-                commentsPage.isFirst(),
-                commentsPage.isLast());
+        return new GetCommentRes(commentsPage);
     }
 
 }
