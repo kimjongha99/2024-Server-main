@@ -28,21 +28,21 @@ public class Like extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")
     private Article article;
-
+    @Enumerated(EnumType.STRING)
     private LikeStatus likeStatus;
 
     public void cancel(){
-        this.likeStatus = LikeStatus.CANCEL;
+        this.likeStatus = LikeStatus.BAD;
     }
 
 
     public void add(){
-        this.likeStatus = LikeStatus.ADD;
+        this.likeStatus = LikeStatus.GOOD;
     }
     public Like(User user, Article article) {
         this.user = user;
         this.article = article;
-        this.likeStatus = LikeStatus.ADD;
+        this.likeStatus = LikeStatus.GOOD;
     }
 
 }

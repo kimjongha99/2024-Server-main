@@ -1,9 +1,11 @@
 package com.example.demo.src.article;
 
 import com.example.demo.common.enums.ArticleStatus;
+import com.example.demo.common.enums.LikeStatus;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.response.BaseResponseStatus;
 import com.example.demo.src.article.entity.Article;
+import com.example.demo.src.article.entity.Like;
 import com.example.demo.src.article.model.*;
 import com.example.demo.src.report.entity.Report;
 import com.example.demo.src.user.UserRepository;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.demo.common.enums.UserState.ACTIVE;
@@ -34,7 +37,7 @@ public class ArticleService {
 
 
     public PostArticleRes createArticle(PostArticleReq postArticleReq, Long jwtUserId) {
-        try {
+
 
             // JWT에서 추출한 userId와 요청에서 받은 userId가 일치하는지 확인
             if (!postArticleReq.getUserId().equals(jwtUserId)) {
@@ -49,17 +52,11 @@ public class ArticleService {
             articleRepository.save(article);
 
             return new PostArticleRes(article);
-        } catch (
-                DataAccessException e) {
-            throw new BaseException(DATABASE_ERROR); // 데이터베이스 접근 예외 처리
 
-
-        }
     }
 
     @Transactional
     public String patchArticle(PatchArticleReq patchArticleReq, Long jwtUserId, Long articleId) {
-        try {
             // JWT에서 추출한 userId와 요청에서 받은 userId가 일치하는지 확인
             if (!patchArticleReq.getUserId().equals(jwtUserId)) {
                 throw new BaseException(INVALID_USER_ACCESS); // 적절한 예외 처리
@@ -86,18 +83,12 @@ public class ArticleService {
             return "기사가 업데이트되었습니다."; // 성공 메시지 반환
 
 
-        } catch (
-                DataAccessException e) {
-            throw new BaseException(DATABASE_ERROR); // 데이터베이스 접근 예외 처리
-
-        }
 
     }
 
 
     @Transactional
     public String reportArticle(Long jwtUserId, Long articleId, PostReportReq postReportReq) {
-        try {
             // 게시물 조회
             Article article = articleRepository.findByIdAndStatus(articleId, ArticleStatus.ACTIVE)
                     .orElseThrow(() -> new BaseException(BaseResponseStatus.ARTICLE_NOT_FOUND));
@@ -126,11 +117,6 @@ public class ArticleService {
 
             return "게시물이 성공적으로 신고되었습니다.";
 
-        } catch (
-                DataAccessException e) {
-            throw new BaseException(DATABASE_ERROR); // 데이터베이스 접근 예외 처리
-
-        }
 
     }
 
@@ -144,7 +130,6 @@ public class ArticleService {
     @Transactional(readOnly = true)
 
     public List<GetArticlePreviewRes> findAllBySearch(int page, int size) {
-        try {
             Pageable pageable = PageRequest.of(page, size);
             Page<Article> articlePage = articleRepository.findAllByStatus(ArticleStatus.ACTIVE, pageable);
 
@@ -157,8 +142,60 @@ public class ArticleService {
                             article.getImages()
                     ))
                     .collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR); // 적절한 예외 처리
-        }
     }
+
+
+    public void deleteArticleSoftly(Long jwtUserId, Long articleId) {
+            // findByIdAndStatus 메서드를 사용하여 ACTIVE 상태의 게시글만 조회
+            Article article = articleRepository.findByIdAndStatus(articleId, ArticleStatus.ACTIVE)
+                    .orElseThrow(() -> new BaseException(ARTICLE_NOT_FOUND_OR_INACTIVE)); // 게시글이 존재하지 않거나 활성 상태가 아닌 경우 예외 처리
+
+            // 요청을 보낸 사용자가 게시글의 작성자와 일치하는지 확인
+            if (!article.getAuthor().getId().equals(jwtUserId)) {
+                throw new BaseException(INVALID_USER_JWT); // 적절한 예외 코드로 교체해주세요.
+            }
+
+            // 게시글 상태를 INACTIVE로 변경
+            article.setStatus(ArticleStatus.INACTIVE);
+            // 변경된 상태 저장
+            articleRepository.save(article);
+
+
+
+    }
+    @Transactional
+    public void addLikeOrCancel(Long jwtUserId, Long articleId) {
+
+            // 인증된 사용자 확인
+            User user = userRepository.findById(jwtUserId)
+                    .orElseThrow(() -> new BaseException(USER_NOT_FOUND)); // 적절한 예외 처리
+            // 게시글 존재 여부 확인
+            Article article = articleRepository.findByIdAndStatus(articleId, ArticleStatus.ACTIVE)
+                    .orElseThrow(() -> new BaseException(ARTICLE_NOT_FOUND_OR_INACTIVE)); // 적절한 예외 처리
+
+            // 이미 좋아요를 눌렀는지 확인
+            Optional<Like> existingLike = likeRepository.findByUserAndArticle(user, article);
+            if (existingLike.isPresent()) {
+                // 이미 좋아요를 눌렀다면, 상태를 확인하고 필요하다면 상태 변경
+                Like like = existingLike.get();
+                if (like.getLikeStatus() == LikeStatus.GOOD) {
+                    like.cancel(); // 상태를 CANCEL 상태로 변경
+                    article.decreaseFavoriteCount(); // 좋아요 감소
+
+                } else {
+                    like.add(); // 상태를 LIKE 상태로 변경
+                    article.increaseFavoriteCount(); // 좋아요 증가
+
+                }
+                likeRepository.save(like); // 상태 변경 후 저장
+            } else {
+                // 좋아요 추가
+                Like newLike = new Like(user, article);
+                likeRepository.save(newLike);
+                article.increaseFavoriteCount(); // 좋아요 증가
+            }
+        articleRepository.save(article); // Article의 변경 사항 저장
+    }
+
+
 }

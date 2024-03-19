@@ -89,7 +89,15 @@ public class Article extends BaseEntity {
         this.reportCount+=1;
     }
 
-    public void setStatus(ArticleStatus inactive) {
-        this.status= inactive;
+    public void setStatus(ArticleStatus status) {
+        this.status= status;
+    }
+
+    public void increaseFavoriteCount() {
+        this.favoriteCount += 1;
+    }
+
+    public void decreaseFavoriteCount() {
+        this.favoriteCount = Math.max(0, this.favoriteCount - 1);
     }
 }
