@@ -114,7 +114,7 @@ public class ArticleController {
     }
 
     /**
-     * 게시글 목록 조회 API (무한 스크롤 지원)
+     * 게시글 목록 조회 API
      * [GET] /app/articles?page=&size=
      * @param page 페이지 번호 (0부터 시작)
      * @param size 페이지 당 게시글 수
@@ -128,7 +128,7 @@ public class ArticleController {
             List<GetArticlePreviewRes> articlePreviews = articleService.findAllBySearch(page, size);
             return new BaseResponse<>(articlePreviews);
         } catch (Exception e) {
-            return new BaseResponse<>(UNEXPECTED_ERROR); // Make sure to define this error code appropriately
+            return new BaseResponse<>(UNEXPECTED_ERROR);
         }
     }
 

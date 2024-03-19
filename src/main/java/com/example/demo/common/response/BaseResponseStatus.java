@@ -79,7 +79,9 @@ public enum BaseResponseStatus {
 
     FAILED_TO_CANCEL_PAYMENT(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제정보를 찾을수없습니다." ),
     FAILED_TO_PAYMENT(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제정보를 찾을수없습니다 "),
-    PAYMENT_VERIFICATION_FAILED(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제정보를 찾을수없습니다 " );
+    PAYMENT_VERIFICATION_FAILED(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제정보를 찾을수없습니다 " ),
+
+    ALREADY_EXIST_SUBSCRIPTION(false, HttpStatus.INTERNAL_SERVER_ERROR.value() , "이미 구독이 존재합니다.");
 
 
     private final boolean isSuccess;
