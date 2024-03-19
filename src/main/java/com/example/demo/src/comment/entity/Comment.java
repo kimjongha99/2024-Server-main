@@ -9,8 +9,9 @@ import javax.persistence.*;
 
 @Getter
 @EqualsAndHashCode(callSuper = false)
-
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
 @Entity(name = "comment")
 @Table(name = "comment")
 public class Comment extends BaseEntity {
@@ -28,8 +29,6 @@ public class Comment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-
 
 
 
