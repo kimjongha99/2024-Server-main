@@ -48,6 +48,7 @@ public enum BaseResponseStatus {
 
     CREATE_COMMENT_INVALID_CONTENT(false,HttpStatus.NOT_FOUND.value(),"댓글의 길이가 너무 길거나 짧습니다."),
     INVALID_OAUTH_TYPE(false, HttpStatus.BAD_REQUEST.value(), "알 수 없는 소셜 로그인 형식입니다."),
+    FORBIDDEN_ACCESS(false, HttpStatus.FORBIDDEN.value(), "알 수 없는 소셜 로그인 형식입니다."),
 
 
 
