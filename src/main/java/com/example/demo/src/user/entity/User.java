@@ -151,4 +151,8 @@ public class User extends BaseEntity {
         this.subscriptions.add(subscription);
         this.payments.add(payments);
     }
+
+    public void setStatus(UserState status) {
+        this.state = status;
+    }
 }

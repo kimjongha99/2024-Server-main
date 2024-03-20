@@ -3,6 +3,7 @@ package com.example.demo.src.admin;
 
 import com.example.demo.common.enums.ArticleStatus;
 import com.example.demo.common.enums.ReportStatus;
+import com.example.demo.common.enums.UserState;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.response.BaseResponseStatus;
 import com.example.demo.src.admin.model.*;
@@ -28,8 +29,6 @@ public class AdminService {
     private final ReportRepository reportRepository;
 
     private final ArticleRepository articleRepository;
-
-
 
     @Transactional(readOnly = true)
     public AdminUserDetailRes getAdminUserDetails(Long userId) {
@@ -88,5 +87,14 @@ public class AdminService {
         // 변경 사항 저장
         articleRepository.save(article);
 
+    }
+
+    @Transactional
+    public void updateUserStatus(Long userId, UserState status) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NOT_FOUND));
+
+        user.setStatus(status);
+        userRepository.save(user);
     }
 }
