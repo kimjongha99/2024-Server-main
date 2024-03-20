@@ -42,4 +42,8 @@ public class Report extends BaseEntity {
         this.reason = reason;
         this.status = ReportStatus.PENDING;
     }
+
+    public void setStatus(ReportStatus reportStatus) {
+        this.status =reportStatus;
+    }
 }

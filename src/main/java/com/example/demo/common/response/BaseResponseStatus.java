@@ -50,6 +50,7 @@ public enum BaseResponseStatus {
     INVALID_OAUTH_TYPE(false, HttpStatus.BAD_REQUEST.value(), "알 수 없는 소셜 로그인 형식입니다."),
     FORBIDDEN_ACCESS(false, HttpStatus.FORBIDDEN.value(), "알 수 없는 소셜 로그인 형식입니다."),
 
+    REQUEST_ERROR(false, HttpStatus.BAD_REQUEST.value(), "잘못된 상태 상태 값" ),
 
 
     /**
@@ -86,6 +87,7 @@ public enum BaseResponseStatus {
     PAYMENT_VERIFICATION_FAILED(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제정보를 찾을수없습니다 " ),
 
     ALREADY_EXIST_SUBSCRIPTION(false, HttpStatus.INTERNAL_SERVER_ERROR.value() , "이미 구독이 존재합니다.");
+
 
 
     private final boolean isSuccess;
