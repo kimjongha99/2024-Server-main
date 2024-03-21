@@ -1,21 +1,23 @@
 package com.example.demo.src.user;
 
 
-import com.example.demo.common.Constant.SocialLoginType;
-import com.example.demo.common.oauth.OAuthService;
+import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.common.oauth.infra.kakao.KakaoLoginParams;
+import com.example.demo.common.oauth.application.OAuthLoginService;
+import com.example.demo.common.response.BaseResponseStatus;
 import com.example.demo.utils.JwtService;
+import com.example.demo.utils.ValidationRegex;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.user.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -31,8 +33,7 @@ public class UserController {
 
     private final UserService userService;
 
-    private final OAuthService oAuthService;
-
+    private final OAuthLoginService oAuthLoginService;
     private final JwtService jwtService;
 
 
@@ -50,12 +51,29 @@ public class UserController {
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
+        // 이메일이 null인지 체크
         if(postUserReq.getEmail() == null){
-            return new BaseResponse<>(USERS_EMPTY_EMAIL);
+            return new BaseResponse<>(USERS_EMPTY_EMAIL); // 적절한 에러 코드 상수를 사용하세요.
         }
-        //이메일 정규표현
-        if(!isRegexEmail(postUserReq.getEmail())){
-            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
+
+        // 이메일 유효성 검사
+        if(!ValidationRegex.isRegexEmail(postUserReq.getEmail())){
+            return new BaseResponse<>(POST_USERS_INVALID_EMAIL); // 적절한 에러 코드 상수를 사용하세요.
+        }
+
+        // 비밀번호 길이 검사
+        if(!ValidationRegex.isPasswordValid(postUserReq.getPassword())){
+            return new BaseResponse<>(POST_USERS_INVALID_PASSWORD); // 적절한 에러 코드 상수를 정의하고 사용하세요.
+        }
+
+        // 이름 유효성 검사
+        if(!ValidationRegex.isNameValid(postUserReq.getName())){
+            return new BaseResponse<>(POST_USERS_INVALID_NAME); // 적절한 에러 코드 상수를 정의하고 사용하세요.
+        }
+
+        // 생일 날짜 유효성 검사
+        if(!ValidationRegex.isBirthDateValid(postUserReq.getBirthDate().toString())){
+            return new BaseResponse<>(POST_USERS_INVALID_BIRTHDATE); // 적절한 에러 코드 상수를 정의하고 사용하세요.
         }
         PostUserRes postUserRes = userService.createUser(postUserReq);
         return new BaseResponse<>(postUserRes);
@@ -159,49 +177,62 @@ public class UserController {
     @ResponseBody
     @PostMapping("/logIn")
     public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
-        // TODO: 로그인 값들에 대한 형식적인 validatin 처리해주셔야합니다!
-        // TODO: 유저의 status ex) 비활성화된 유저, 탈퇴한 유저 등을 관리해주고 있다면 해당 부분에 대한 validation 처리도 해주셔야합니다.
         PostLoginRes postLoginRes = userService.logIn(postLoginReq);
         return new BaseResponse<>(postLoginRes);
     }
 
 
+
     /**
-     * 유저 소셜 가입, 로그인 인증으로 리다이렉트 해주는 url
-     * [GET] /app/users/auth/:socialLoginType/login
-     * @return void
+     * 카카오 로그인 API
+     * [POST] /app/users/kakao
+     * @param params 카카오 로그인 요청 파라미터
+     * @return BaseResponse<AuthTokens>
      */
-    @Operation(summary = "소셜 로그인 리디렉션", description = "지정된 소셜 로그인 유형에 대한 소셜 로그인 페이지로 리디렉션됩니다.", responses = {
-            @ApiResponse(description = "Redirection successful", responseCode = "302"),
-            @ApiResponse(description = "Invalid social login type", responseCode = "400")
+    @Operation(summary = "카카오 로그인", description = "카카오 계정으로 로그인하고 토큰을 반환합니다.", responses = {
+            @ApiResponse(description = "성공", responseCode = "200", content = @Content(schema = @Schema(implementation = GetSocialOAuthRes.class))),
+            @ApiResponse(description = "잘못된 요청", responseCode = "400"),
+            @ApiResponse(description = "인증 실패", responseCode = "401")
     })
-    @GetMapping("/auth/{socialLoginType}/login")
-    public void socialLoginRedirect(@PathVariable(name="socialLoginType") String SocialLoginPath) throws IOException {
-        SocialLoginType socialLoginType= SocialLoginType.valueOf(SocialLoginPath.toUpperCase());
-        oAuthService.accessRequest(socialLoginType);
+    @PostMapping("/kakao")
+    public BaseResponse<GetSocialOAuthRes> loginKakao(@RequestBody KakaoLoginParams params) {
+        GetSocialOAuthRes tokens = oAuthLoginService.login(params);
+        return new BaseResponse<>(tokens);
     }
 
 
+
+
+
     /**
-     * Social Login API Server 요청에 의한 callback 을 처리
-     * @param socialLoginPath (GOOGLE, FACEBOOK, NAVER, KAKAO)
-     * @param code API Server 로부터 넘어오는 code
-     * @return SNS Login 요청 결과로 받은 Json 형태의 java 객체 (access_token, jwt_token, user_num 등)
+     * 소셜로그인시 추가 정보 요청 API
+     * [POST] /app/users/login-add/:userId
+     *
+     * @return BaseResponse<String>
      */
-    @Operation(summary = "소셜 로그인 콜백 처리", description = "소셜 로그인 공급자의 콜백을 처리하고 사용자 토큰에 대한 코드를 교환합니다..", responses = {
-            @ApiResponse(description = "Successful operation", responseCode = "200", content = @Content(schema = @Schema(implementation = GetSocialOAuthRes.class))),
-            @ApiResponse(description = "Error during callback processing", responseCode = "500")
-    })
-    @ResponseBody
-    @GetMapping(value = "/auth/{socialLoginType}/login/callback")
-    public BaseResponse<GetSocialOAuthRes> socialLoginCallback(
-            @PathVariable(name = "socialLoginType") String socialLoginPath,
-            @RequestParam(name = "code") String code) throws IOException, BaseException{
-        log.info(">> 소셜 로그인 API 서버로부터 받은 code : {}", code);
-        SocialLoginType socialLoginType = SocialLoginType.valueOf(socialLoginPath.toUpperCase());
-        GetSocialOAuthRes getSocialOAuthRes = oAuthService.oAuthLoginOrJoin(socialLoginType,code);
-        return new BaseResponse<>(getSocialOAuthRes);
+    @Operation(summary = "소셜로그인 추가 정보입력",
+            description = "소셜로그인 때 추가정보가 없는 경우 추가정보 입력",
+            responses = {
+                    @ApiResponse(description = "성공", responseCode = "200", content = @Content(schema = @Schema(implementation = String.class))),
+                    @ApiResponse(description = "사용자를 찾을 수 없습니다", responseCode = "404"),
+                    @ApiResponse(description = "잘못된 요청", responseCode = "400")
+            })
+    @PostMapping("/login-add/{userId}")
+    public BaseResponse<String> addSocialLoginAdditionalInfo(@PathVariable Long userId, @RequestBody AdditionalInfo additionalInfo) {
+        // 토큰에서 userId 추출
+        Long tokenUserId = jwtService.getUserId();
+
+        // PathVariable의 userId와 토큰에서 추출한 userId 비교
+        if (!userId.equals(tokenUserId)) {
+            return new BaseResponse<>(NOT_FIND_USER);
+        }
+        userService.addAdditionalInfo(userId, additionalInfo);
+        String result = "소셜 추가정보 입력 완료!!";
+        return new BaseResponse<>(result);
+
+
     }
+
 
 
 }

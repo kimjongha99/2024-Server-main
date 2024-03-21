@@ -2,7 +2,6 @@ package com.example.demo.src.user;
 
 
 
-import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.enums.UserRoleEnum;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.user.entity.User;
@@ -18,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
+import static com.example.demo.common.enums.UserState.ACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
 
 // Service Create, Update, Delete 의 로직 처리
@@ -37,6 +36,17 @@ public class UserService {
         if (!postUserReq.isPrivacyPolicyAgreed()) {
             throw new BaseException(PRIVACY_POLICY_AGREEMENT_REQUIRED);
         }
+
+        // 위치기반 서비스에 대한 동의 여부 확인
+        if (!postUserReq.isLocationBasedServicesAgreed()) {
+            throw new BaseException(LOCATION_BASED_SERVICES_AGREEMENT_REQUIRED);
+        }
+
+        // 데이터 정책에 대한 동의 여부 확인
+        if (!postUserReq.isDataPolicyAgreed()) {
+            throw new BaseException(DATA_POLICY_AGREEMENT_REQUIRED);
+        }
+
         //중복 체크
         Optional<User> checkUser = userRepository.findByEmailAndState(postUserReq.getEmail(), ACTIVE);
         if(checkUser.isPresent() == true){
@@ -56,14 +66,6 @@ public class UserService {
 
     }
 
-    public PostUserRes createOAuthUser(User user) {
-        User saveUser = userRepository.save(user);
-
-        // JWT 발급
-        String jwtToken = jwtService.createJwt(saveUser.getId() , UserRoleEnum.USER);
-        return new PostUserRes(saveUser.getId(), jwtToken);
-
-    }
 
     public void modifyUserName(Long userId, PatchUserReq patchUserReq) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
@@ -120,6 +122,10 @@ public class UserService {
         }
 
         if(user.getPassword().equals(encryptPwd)){
+            user.setLastLoginAt(LocalDateTime.now());
+            userRepository.save(user); // 업데이트된 정보를 저장
+
+
             Long userId = user.getId();
             UserRoleEnum role = user.getRole();
             String jwt = jwtService.createJwt(userId,role);
@@ -133,5 +139,20 @@ public class UserService {
     public GetUserRes getUserByEmail(String email) {
         User user = userRepository.findByEmailAndState(email, ACTIVE).orElseThrow(() -> new BaseException(NOT_FIND_USER));
         return new GetUserRes(user);
+    }
+
+    public void addAdditionalInfo(Long userId, AdditionalInfo additionalInfo) {
+        // 1. 사용자 조회
+        User user = userRepository.findByIdAndState(userId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER)); // 사용자를 찾을 수 없을 때 예외 처리
+
+        user.setBirthDate(additionalInfo.getBirthDate());
+        user.setPrivacyPolicyAgreed(additionalInfo.isPrivacyPolicyAgreed());
+        user.setDataPolicyAgreed(additionalInfo.isDataPolicyAgreed());
+        user.setLocationBasedServicesAgreed(additionalInfo.isLocationBasedServicesAgreed());
+        user.setLastAgreedAt(LocalDateTime.now()); // 현재 시각을 마지막 동의 시각으로 설정
+        // 3. 업데이트된 사용자 정보 저장
+        userRepository.save(user);
+
     }
 }
