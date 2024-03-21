@@ -72,6 +72,8 @@ dependencies {
     implementation ('com.jcraft:jsch:0.1.55')
     // iamport
     implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'
+    // 로깅
+    implementation 'org.springframework.data:spring-data-envers'
 
 }
 

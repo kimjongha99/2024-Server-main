@@ -4,15 +4,19 @@ import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.article.entity.Article;
 import com.example.demo.src.user.entity.User;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
 @Getter
 @EqualsAndHashCode(callSuper = false)
-
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
 @Entity(name = "comment")
 @Table(name = "comment")
+@Audited
+
 public class Comment extends BaseEntity {
 
     @Id
@@ -30,7 +34,7 @@ public class Comment extends BaseEntity {
     private User user;
 
 
-
-
-
+    public void setContent(String content) {
+        this.content = content;
+    }
 }

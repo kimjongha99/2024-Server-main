@@ -6,6 +6,7 @@ import com.example.demo.src.comment.entity.Comment;
 import com.example.demo.src.report.entity.Report;
 import com.example.demo.src.user.entity.User;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Audited
+
 public class Article extends BaseEntity {
 
     @Id
@@ -89,7 +92,15 @@ public class Article extends BaseEntity {
         this.reportCount+=1;
     }
 
-    public void setStatus(ArticleStatus inactive) {
-        this.status= inactive;
+    public void setStatus(ArticleStatus status) {
+        this.status= status;
+    }
+
+    public void increaseFavoriteCount() {
+        this.favoriteCount += 1;
+    }
+
+    public void decreaseFavoriteCount() {
+        this.favoriteCount = Math.max(0, this.favoriteCount - 1);
     }
 }

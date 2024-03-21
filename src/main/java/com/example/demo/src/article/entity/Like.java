@@ -4,6 +4,7 @@ import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.enums.LikeStatus;
 import com.example.demo.src.user.entity.User;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
@@ -12,6 +13,8 @@ import javax.persistence.*;
 @EqualsAndHashCode(callSuper = false)
 @Getter
 @Entity
+@Audited
+
 @Table(name = "LIKES")
 
 public class Like extends BaseEntity {
@@ -28,21 +31,21 @@ public class Like extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")
     private Article article;
-
+    @Enumerated(EnumType.STRING)
     private LikeStatus likeStatus;
 
     public void cancel(){
-        this.likeStatus = LikeStatus.CANCEL;
+        this.likeStatus = LikeStatus.BAD;
     }
 
 
     public void add(){
-        this.likeStatus = LikeStatus.ADD;
+        this.likeStatus = LikeStatus.GOOD;
     }
     public Like(User user, Article article) {
         this.user = user;
         this.article = article;
-        this.likeStatus = LikeStatus.ADD;
+        this.likeStatus = LikeStatus.GOOD;
     }
 
 }

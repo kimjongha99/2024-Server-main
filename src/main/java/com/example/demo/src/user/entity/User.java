@@ -8,6 +8,7 @@ import com.example.demo.src.article.entity.Article;
 import com.example.demo.src.payment.entity.Payments;
 import com.example.demo.src.payment.entity.Subscription;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import java.util.List;
 @Getter
 @Entity // 필수, Class 를 Database Table화 해주는 것이다
 @Table(name = "USER") // Table 이름을 명시해주지 않으면 class 이름을 Table 이름으로 대체한다.
+@Audited
 public class User extends BaseEntity {
 
     @Id // PK를 의미하는 어노테이션
@@ -150,5 +152,9 @@ public class User extends BaseEntity {
     public void addSubscribe(Subscription subscription, Payments payments) {
         this.subscriptions.add(subscription);
         this.payments.add(payments);
+    }
+
+    public void setStatus(UserState status) {
+        this.state = status;
     }
 }
