@@ -4,6 +4,7 @@ import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.enums.SubscriptionStatus;
 import com.example.demo.src.user.entity.User;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,6 +14,8 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Entity
+@Audited
+
 @Table(name = "SUBSCRIPTION")
 public class Subscription extends BaseEntity {
 

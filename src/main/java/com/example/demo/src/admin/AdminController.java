@@ -15,7 +15,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Parameter;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -177,5 +180,25 @@ public class AdminController {
 
     }
 
-
+    /**
+     * 관리자용 유저 로그 목록 조회 API
+     * [GET] /admin/users/{userId}/audits
+     * 이 API는 관리자에게 특정 유저의 변경 로그(생성, 수정, 삭제 이력)를 조회할 수 있는 기능을 제공합니다.
+     * 조회된 로그에는 유저의 기본 정보 변경, 로그인 상태, 개인정보 처리 동의 등의 이력이 포함될 수 있습니다.
+     * 각 로그 항목은 변경 유형(CREATE, UPDATE, DELETE), 변경된 시각 등을 포함합니다.
+     */
+    @Operation(summary = "유저 로그 목록 조회", description = "관리자가 특정 유저의 변경 로그를 조회합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "조회 성공",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UserAuditResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+                    @ApiResponse(responseCode = "404", description = "유저 정보 없음"),
+                    @ApiResponse(responseCode = "500", description = "서버 에러")
+            })
+    @GetMapping("/users/{userId}/audits")
+    public BaseResponse<List<UserAuditResponse>> getUserAudits(@PathVariable Long userId) {
+        List<UserAuditResponse> audits = adminService.findUserAudits(userId);
+        return new BaseResponse<>(audits);
+    }
 }

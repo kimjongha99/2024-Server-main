@@ -4,6 +4,7 @@ import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.article.entity.Article;
 import com.example.demo.src.user.entity.User;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
@@ -14,6 +15,8 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity(name = "comment")
 @Table(name = "comment")
+@Audited
+
 public class Comment extends BaseEntity {
 
     @Id

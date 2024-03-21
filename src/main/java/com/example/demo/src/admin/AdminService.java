@@ -14,6 +14,12 @@ import com.example.demo.src.report.entity.Report;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.DefaultRevisionEntity;
+import org.hibernate.envers.RevisionType;
+import org.hibernate.envers.query.AuditEntity;
+import org.hibernate.envers.query.AuditQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,9 +27,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class AdminService {
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final UserRepository userRepository;
     private final ReportRepository reportRepository;
@@ -97,4 +111,29 @@ public class AdminService {
         user.setStatus(status);
         userRepository.save(user);
     }
+
+    public List<UserAuditResponse> findUserAudits(Long userId) {
+        AuditReader auditReader = AuditReaderFactory.get(entityManager);
+
+        AuditQuery query = auditReader.createQuery().forRevisionsOfEntity(User.class, false, true);
+        query.add(AuditEntity.id().eq(userId));
+        List<Object[]> results = query.getResultList();
+
+        return results.stream().map(obj -> {
+            User user = (User) obj[0];
+            DefaultRevisionEntity revisionEntity = (DefaultRevisionEntity) obj[1];
+            RevisionType revisionType = (RevisionType) obj[2];
+
+            UserAuditResponse response = new UserAuditResponse();
+            response.setUserId(user.getId());
+            response.setRevision(revisionEntity.getId());
+            response.setChangedAt(String.valueOf(revisionEntity.getRevisionDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()));
+            response.setRevisionType(revisionType.name());
+
+            return response;
+        }).collect(Collectors.toList());
+    }
+
 }
+
+

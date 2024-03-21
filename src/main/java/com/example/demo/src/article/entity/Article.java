@@ -6,6 +6,7 @@ import com.example.demo.src.comment.entity.Comment;
 import com.example.demo.src.report.entity.Report;
 import com.example.demo.src.user.entity.User;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Audited
+
 public class Article extends BaseEntity {
 
     @Id

@@ -5,6 +5,7 @@ import com.example.demo.common.enums.ReportStatus;
 import com.example.demo.src.article.entity.Article;
 import com.example.demo.src.user.entity.User;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = false)
+@Audited
 
 public class Report extends BaseEntity {
 
