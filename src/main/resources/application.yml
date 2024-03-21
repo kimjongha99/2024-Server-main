@@ -14,7 +14,7 @@ spring:
     init:
       platform: mysql
   datasource:
-    url: jdbc:mysql://localhost:3306/demo?autoReconnect=true&setTimezone=Asia/Seoul # 변경해주세요
+    url: ENC(WPpU/8znMi6cllqefeq7ejNhcyPXfy+vho+4mzhLGNNdjrG12NEIIRA90LGd6l+BmnS75dH92iZxeYr2SH2IhEuwRXJ81NlrCrPfWIcuKqKmn3DUZ+7Vst/9YdAHJqIL)
     username: ENC(nBr7+VNHjlPxo/dP9uQl+A==)
     password: ENC(WQpiqtnC9XvJIImORru18rcPaE3YWI3O)
     driver-class-name: com.mysql.cj.jdbc.Driver
