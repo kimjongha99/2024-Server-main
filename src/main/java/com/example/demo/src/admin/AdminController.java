@@ -168,6 +168,14 @@ public class AdminController {
      * 상태 변경은 유저의 계정 접근성 및 가시성 관리에 필요한 조치입니다. 예를 들어, 규정 위반 유저를 비활성화하거나 삭제할 수 있습니다.
      * 요청은 유저 ID와 변경하고자 하는 새로운 상태를 포함해야 합니다.
      */
+    @Operation(summary = "유저 상태 변경 ", description = "관리자가 특정 유저의 상태를 변경 합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "조회 성공",
+                            content = @Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+                    @ApiResponse(responseCode = "404", description = "유저 정보 없음"),
+                    @ApiResponse(responseCode = "500", description = "서버 에러")
+            })
     @PatchMapping("/users/{userId}/status")
     public BaseResponse<String> updateUserStatus(@PathVariable Long userId, @RequestParam("status") UserState status) {
         String userRole = jwtService.getUserRole();
