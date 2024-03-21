@@ -52,6 +52,7 @@ public enum BaseResponseStatus {
 
     REQUEST_ERROR(false, HttpStatus.BAD_REQUEST.value(), "잘못된 상태 상태 값" ),
 
+    SUBSCRIPTION_NOT_FOUND(false, HttpStatus.BAD_REQUEST.value(), "잘못된 구독 상태 "),
 
     /**
      * 500 :  Database, Server 오류

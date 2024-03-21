@@ -3,6 +3,7 @@ package com.example.demo.src.payment;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.article.model.PatchArticleReq;
 import com.example.demo.src.payment.model.PostPaymentRes;
+import com.example.demo.src.payment.model.SubscriptionRes;
 import com.example.demo.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -59,6 +60,32 @@ public class PaymentController {
             return new BaseResponse<>(UNEXPECTED_ERROR);
         }
 
+
+    }
+
+    /**
+     * 구독 조회 API
+     * [GET] /app/payments/subscription
+     * 이 API는 사용자의 구독 상태 및 정보를 조회합니다. 사용자의 최근 결제 내역을 검사하여, 현재 활성화된 구독 정보를 반환합니다.
+     * 사용자는 이 API를 통해 자신의 구독 여부 및 구독 기간 등의 상세 정보를 확인할 수 있습니다.
+     * Header에 `X-ACCESS-TOKEN`이 필요하며, 토큰을 통해 사용자 식별이 이루어집니다.
+     */
+    @Operation(
+            summary = "구독 조회 API",
+            description = "사용자의 구독 정보를 조회합니다. 사용자는 자신의 구독 상태 및 기간 등의 상세 정보를 확인할 수 있습니다. Header에 `X-ACCESS-TOKEN`을 포함해야 합니다.",
+            security = @SecurityRequirement(name = "X-ACCESS-TOKEN"),
+            responses = {
+                    @ApiResponse(description = "성공", responseCode = "200", content = @Content(schema = @Schema(implementation = SubscriptionRes.class))),
+                    @ApiResponse(description = "인증 실패 또는 구독 정보 없음", responseCode = "400")
+            }
+    )
+    @GetMapping("/subscription")
+    public BaseResponse<SubscriptionRes> getSubscriptionInfo() {
+        Long jwtUserId = jwtService.getUserId();
+
+        SubscriptionRes subscriptionRes = paymentService.getSubscriptionInfo(jwtUserId);
+
+        return new BaseResponse<>(subscriptionRes);
 
     }
 

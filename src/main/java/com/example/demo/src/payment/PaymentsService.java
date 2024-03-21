@@ -8,6 +8,7 @@ import com.example.demo.common.response.BaseResponseStatus;
 import com.example.demo.src.payment.entity.Payments;
 import com.example.demo.src.payment.entity.Subscription;
 import com.example.demo.src.payment.model.PostPaymentRes;
+import com.example.demo.src.payment.model.SubscriptionRes;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
 import com.siot.IamportRestClient.IamportClient;
@@ -23,6 +24,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.example.demo.common.response.BaseResponseStatus.USER_NOT_FOUND;
 
 @Transactional
 @RequiredArgsConstructor
@@ -127,7 +130,7 @@ public class PaymentsService {
     }
 
 
-
+@Transactional(readOnly = true)
     public void verifyPayments() {
         // paidAmount가 10,000.00과 일치하지 않는 모든 결제 레코드를 가져옵니다.
         List<Payments> discrepancyPayments = paymentRepository.findByPaidAmountNot(new BigDecimal("10000.00"));
@@ -142,5 +145,22 @@ public class PaymentsService {
         }
     }
 
+
+
+
+    @Transactional(readOnly = true)
+    public SubscriptionRes getSubscriptionInfo(Long userId) {
+        // 사용자 검증
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
+
+        // 사용자의 구독 정보 조회
+        Subscription subscription = subscriptionRepository.findByUser(user)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.SUBSCRIPTION_NOT_FOUND));
+
+        // 조회된 구독 정보를 이용하여 응답 객체 생성
+        return new SubscriptionRes(subscription);
+
     }
+}
 
