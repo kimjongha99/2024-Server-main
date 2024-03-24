@@ -19,7 +19,6 @@ public class PostUserReq {
     private String name;
 
     private LocalDate birthDate;
-    private boolean isOAuth;
 
     private boolean privacyPolicyAgreed;
     private boolean locationBasedServicesAgreed;

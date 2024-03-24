@@ -145,17 +145,17 @@ public class UserController {
     }
 
     /**
-     * 유저정보삭제 API
+     * 유저정보 소프트  삭제 API
      * [DELETE] /app/users/:userId
      * @return BaseResponse<String>
      */
-    @Operation(summary = "사용자 삭제", description = "userId로 식별된 사용자를 시스템에서 제거합니다..", responses = {
+    @Operation(summary = "사용자 소프트  삭제", description = "userId로 식별된 사용자를 소프트 제거합니다..", responses = {
             @ApiResponse(description = "Successful operation", responseCode = "200", content = @Content(schema = @Schema(implementation = String.class))),
             @ApiResponse(description = "User not found", responseCode = "404"),
             @ApiResponse(description = "Unauthorized", responseCode = "401")
     })
     @ResponseBody
-    @DeleteMapping("/{userId}")
+    @PatchMapping("/{userId}/delete")
     public BaseResponse<String> deleteUser(@PathVariable("userId") Long userId){
         Long jwtUserId = jwtService.getUserId();
 
