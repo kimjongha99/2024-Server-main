@@ -8,6 +8,7 @@ import java.util.List;
 @AllArgsConstructor
 @Setter
 @Getter
+@NoArgsConstructor
 public class GetArticlePreviewRes {
     private Long articleId;
     private String title;

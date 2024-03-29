@@ -125,7 +125,6 @@ public class ArticleController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
-
             List<GetArticlePreviewRes> articlePreviews = articleService.findAllBySearch(page, size);
             return new BaseResponse<>(articlePreviews);
 

@@ -11,6 +11,7 @@ import com.example.demo.src.report.entity.Report;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.domain.Page;
@@ -130,7 +131,7 @@ public class ArticleService {
      * @return 게시글 목록
      */
     @Transactional(readOnly = true)
-
+    @Cacheable(value = "articles", key = "#page + '_' + #size")
     public List<GetArticlePreviewRes> findAllBySearch(int page, int size) {
             Pageable pageable = PageRequest.of(page, size);
             Page<Article> articlePage = articleRepository.findAllByStatus(ArticleStatus.ACTIVE, pageable);
