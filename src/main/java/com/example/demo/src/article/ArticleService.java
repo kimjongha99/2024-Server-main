@@ -147,6 +147,8 @@ public class ArticleService {
     }
 
 
+
+    @Transactional
     public void deleteArticleSoftly(Long jwtUserId, Long articleId) {
             // findByIdAndStatus 메서드를 사용하여 ACTIVE 상태의 게시글만 조회
             Article article = articleRepository.findByIdAndStatus(articleId, ArticleStatus.ACTIVE)
