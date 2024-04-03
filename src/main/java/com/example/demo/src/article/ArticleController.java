@@ -111,22 +111,23 @@ public class ArticleController {
      * [GET] /app/articles?page=&size=
      * @param page 페이지 번호 (0부터 시작)
      * @param size 페이지 당 게시글 수
-     * @return BaseResponse<List<GetArticlePreviewRes>>
+     * @return BaseResponse<ArticlePageResponse>
+     *         ArticlePageResponse 객체 내에서 게시글 목록과 페이징 정보(현재 페이지, 총 페이지 수 등)을 포함
      */
     @Operation(summary = "게시글 목록 조회",
-            description = "페이지 번호와 페이지 당 게시글 수를 기준으로 게시글 목록을 조회합니다. 페이지는 0부터 시작합니다.",
+            description = "페이지 번호와 페이지 당 게시글 수를 기준으로 게시글 목록을 조회합니다. 페이지는 0부터 시작합니다. 페이징 정보와 함께 게시글 목록을 반환합니다.",
             responses = {
                     @ApiResponse(description = "성공", responseCode = "200",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = GetArticlePreviewRes.class)))),
+                            content = @Content(schema = @Schema(implementation = ArticlePageResponse.class))),
                     @ApiResponse(description = "실패", responseCode = "400")
             })
     @GetMapping("")
-    public BaseResponse<List<GetArticlePreviewRes>> findPostByPaging(
+    public BaseResponse<ArticlePageResponse> findPostByPaging(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
-            List<GetArticlePreviewRes> articlePreviews = articleService.findAllBySearch(page, size);
-            return new BaseResponse<>(articlePreviews);
+        ArticlePageResponse articlePageResponse = articleService.findAllBySearch(page, size);
+        return new BaseResponse<>(articlePageResponse);
 
     }
 

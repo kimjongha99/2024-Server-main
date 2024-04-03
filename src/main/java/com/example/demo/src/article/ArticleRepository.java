@@ -5,6 +5,7 @@ import com.example.demo.common.enums.UserState;
 import com.example.demo.src.article.entity.Article;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -17,7 +18,7 @@ public interface ArticleRepository extends JpaRepository<Article,Long> {
     Optional<Article> findByIdAndStatus(Long articleId, ArticleStatus active);
 
     List<Article> findByReportCountGreaterThanEqualAndStatus(int i, ArticleStatus active);
-
+    @EntityGraph(attributePaths = {"images"})
     Page<Article> findAllByStatus(ArticleStatus active, Pageable pageable);
     // Use a JPQL query to select just the IDs
     @Query("SELECT a.id FROM Article a")
