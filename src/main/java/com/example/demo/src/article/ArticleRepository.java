@@ -6,6 +6,7 @@ import com.example.demo.src.article.entity.Article;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,4 +19,7 @@ public interface ArticleRepository extends JpaRepository<Article,Long> {
     List<Article> findByReportCountGreaterThanEqualAndStatus(int i, ArticleStatus active);
 
     Page<Article> findAllByStatus(ArticleStatus active, Pageable pageable);
+    // Use a JPQL query to select just the IDs
+    @Query("SELECT a.id FROM Article a")
+    List<Long> findAllArticleIds();
 }

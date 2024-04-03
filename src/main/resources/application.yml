@@ -14,7 +14,7 @@ spring:
     init:
       platform: mysql
   datasource:
-    url: ENC(WPpU/8znMi6cllqefeq7ejNhcyPXfy+vho+4mzhLGNNdjrG12NEIIRA90LGd6l+BmnS75dH92iZxeYr2SH2IhEuwRXJ81NlrCrPfWIcuKqKmn3DUZ+7Vst/9YdAHJqIL)
+    url: ENC(FjebOyMdrZSF8Cwhcofnzqv+fGJ2OHy1c64+7/m6VFBDoHGfaLXODHD037HF88YDpdzysuBBhyHRPU1QojUcr7DUDdeGPX5HXaI6THWa6jrJ0KeQjIt0zyl01yFA1zVs)
     username: ENC(nBr7+VNHjlPxo/dP9uQl+A==)
     password: ENC(WQpiqtnC9XvJIImORru18rcPaE3YWI3O)
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -31,7 +31,7 @@ logging:
 
 oauth:
   kakao:
-    client-id: ENC(05150IcDxE2oG/UDVdJw7xFL+wze7ggvnyHxOD9k95s01hLOTIFVQqBk0DasZi31)
+    client-id: ENC(Ncwn8VG4jM5MGvRTTXlQLQ5p5wyHGqObLD51qg0VNXI4AxR64w7gp4cCGR0/kZdw)
     url:
       auth: https://kauth.kakao.com
       api: https://kapi.kakao.com
@@ -56,7 +56,7 @@ springdoc:
     - /**
 
 jwt:
-  secret-key: UwKYibQQgkW7g-*k.ap9kje-wxBHb9wdXoBT4vnt4P3sJWt-Nu  # JWT key.
+  secret-key: UwKYibQQgkW7g-*k.ap9kje-wxBHb9wdXoBT4vnt4P3sJWt-Nu
 
 imp:
   code: ENC(OFOYhyrMEiMV8InF+OvGj1EYAZi0dGHW)

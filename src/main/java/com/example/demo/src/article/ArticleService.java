@@ -36,6 +36,8 @@ public class ArticleService {
     private final LikeRepository likeRepository;
 
 
+
+    @Transactional
     public PostArticleRes createArticle(PostArticleReq postArticleReq, Long jwtUserId) {
 
 
@@ -216,4 +218,7 @@ public class ArticleService {
         return articleRes;
     }
 
+    public List<Long> getAllArticleIds() {
+        return articleRepository.findAllArticleIds();
+    }
 }

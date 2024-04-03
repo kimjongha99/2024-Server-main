@@ -45,7 +45,7 @@ class UserServiceTest {
         String rawPassword = "password1";
         String encryptedPassword = SHA256.encrypt(rawPassword); // 비밀번호를 미리 암호화
 
-        PostUserReq postUserReq = new PostUserReq("user@example.com", encryptedPassword, "Test User", testBirthDate, false, true, true, true);
+        PostUserReq postUserReq = new PostUserReq("user@example.com", encryptedPassword, "Test User", testBirthDate, true, true, true);
 
 
         // 모킹: 사용자 중복 체크 (없음을 가정)
@@ -70,7 +70,6 @@ class UserServiceTest {
         assertEquals(postUserReq.getEmail(), preparedUser.getEmail(), "이메일이 일치해야 합니다.");
         assertEquals(encryptedPassword, preparedUser.getPassword(), "비밀번호가 암호화되어 저장되어야 합니다.");
         assertEquals(postUserReq.getName(), preparedUser.getName(), "이름이 일치해야 합니다.");
-        assertEquals(postUserReq.isOAuth(), preparedUser.isOAuth(), "OAuth 상태가 일치해야 합니다.");
         assertEquals(postUserReq.isPrivacyPolicyAgreed(), preparedUser.isPrivacyPolicyAgreed(), "개인정보 처리방침 동의 상태가 일치해야 합니다.");
     }
 
@@ -79,7 +78,7 @@ class UserServiceTest {
     void createUser_PrivacyPolicyNotAgreed_ThrowsException() {
         // Given
         LocalDate testBirthDate = LocalDate.of(1990, 1, 1); // 테스트용 생년월일
-        PostUserReq postUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, false, false, true, true);
+        PostUserReq postUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, false, true, true);
 
         // When & Then
         assertThrows(BaseException.class, () -> userService.createUser(postUserReq), "개인정보 처리방침에 대한 동의가 필요합니다.");
@@ -90,7 +89,7 @@ class UserServiceTest {
     void createUserLOCATION_DATA_POLICY_AGREEMENT_ThrowsException() {
         // Given
         LocalDate testBirthDate = LocalDate.of(1990, 1, 1); // 테스트용 생년월일
-        PostUserReq postUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, false, true, true, false);
+        PostUserReq postUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, true, true, false);
 
         // When & Then
         assertThrows(BaseException.class, () -> userService.createUser(postUserReq), "개인정보 처리방침에 대한 동의가 필요합니다.");
@@ -101,7 +100,7 @@ class UserServiceTest {
     void createUser_LOCATION_BASED_SERVICES_ThrowsException() {
         // Given
         LocalDate testBirthDate = LocalDate.of(1990, 1, 1); // 테스트용 생년월일
-        PostUserReq postUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, false, true, false, true);
+        PostUserReq postUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, true, false, true);
 
         // When & Then
         assertThrows(BaseException.class, () -> userService.createUser(postUserReq), "개인정보 처리방침에 대한 동의가 필요합니다.");
@@ -113,7 +112,7 @@ class UserServiceTest {
     void createUser_ExistingEmail_ThrowsException() {
         // Given
         LocalDate testBirthDate = LocalDate.of(1990, 1, 1); // 테스트용 생년월일
-        PostUserReq secondUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, false, true, true, true);
+        PostUserReq secondUserReq = new PostUserReq("user@example.com", "password", "Test User", testBirthDate, true, true, true);
 
 
         User user = User.userBuilder()

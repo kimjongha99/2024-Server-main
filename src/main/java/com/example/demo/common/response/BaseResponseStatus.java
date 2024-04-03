@@ -17,15 +17,13 @@ public enum BaseResponseStatus {
     /**
      * 400 : Request, Response 오류
      */
-    POST_ARTICLES_INVALID_CONTENT(false,HttpStatus.BAD_REQUEST.value(),"내용이 1자 100자이내여야합니다"),
-
-    INVALID_USER_ACCESS(false,HttpStatus.BAD_REQUEST.value(),"이미지 개수가 초과했습니다."),
-
-    POST_ARTICLES_EXCEEDS_IMAGE_LIMIT(false,HttpStatus.BAD_REQUEST.value(),"토큰과 유저가 일치하지않습니다"),
+    POST_ARTICLES_INVALID_CONTENT(false, HttpStatus.BAD_REQUEST.value(), "내용이 1자 이상 100자 이내여야 합니다."),
+    INVALID_USER_ACCESS(false, HttpStatus.BAD_REQUEST.value(), "유효하지 않은 유저 접근입니다."),
+    POST_ARTICLES_EXCEEDS_IMAGE_LIMIT(false, HttpStatus.BAD_REQUEST.value(), "이미지 개수가 초과했습니다."),
     USERS_EMPTY_EMAIL(false, HttpStatus.BAD_REQUEST.value(), "이메일을 입력해주세요."),
-    POST_USERS_INVALID_PASSWORD(false, HttpStatus.BAD_REQUEST.value(), "비밀번호 길이 검사해주세요."),
-    POST_USERS_INVALID_NAME(false, HttpStatus.BAD_REQUEST.value(), "이름 유효성."),
-    POST_USERS_INVALID_BIRTHDATE(false, HttpStatus.BAD_REQUEST.value(), "생일 날짜 유효성 검사 해주세요."),
+    POST_USERS_INVALID_PASSWORD(false, HttpStatus.BAD_REQUEST.value(), "비밀번호 길이를 확인해주세요."),
+    POST_USERS_INVALID_NAME(false, HttpStatus.BAD_REQUEST.value(), "이름 유효성을 확인해주세요."),
+    POST_USERS_INVALID_BIRTHDATE(false, HttpStatus.BAD_REQUEST.value(), "생일 날짜 유효성을 확인해주세요."),
 
     TEST_EMPTY_COMMENT(false, HttpStatus.BAD_REQUEST.value(), "코멘트를 입력해주세요."),
     PRIVACY_POLICY_AGREEMENT_REQUIRED(false, HttpStatus.BAD_REQUEST.value(), "개인정보 처리방침 동의가 필요합니다."),
@@ -48,7 +46,8 @@ public enum BaseResponseStatus {
 
     CREATE_COMMENT_INVALID_CONTENT(false,HttpStatus.NOT_FOUND.value(),"댓글의 길이가 너무 길거나 짧습니다."),
     INVALID_OAUTH_TYPE(false, HttpStatus.BAD_REQUEST.value(), "알 수 없는 소셜 로그인 형식입니다."),
-    FORBIDDEN_ACCESS(false, HttpStatus.FORBIDDEN.value(), "알 수 없는 소셜 로그인 형식입니다."),
+    // 접근 금지 관련 수정
+    FORBIDDEN_ACCESS(false, HttpStatus.FORBIDDEN.value(), "접근이 금지되었습니다."),
 
     REQUEST_ERROR(false, HttpStatus.BAD_REQUEST.value(), "잘못된 상태 상태 값" ),
 

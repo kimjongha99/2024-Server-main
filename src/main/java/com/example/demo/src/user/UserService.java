@@ -3,6 +3,7 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.common.enums.UserRoleEnum;
+import com.example.demo.common.enums.UserState;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
@@ -29,7 +30,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
 
-
+    @Transactional
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) {
         // 개인정보 처리방침에 대한 동의 여부 확인
@@ -65,7 +66,7 @@ public class UserService {
         return new PostUserRes(saveUser.getId());
 
     }
-
+    @Transactional
 
     public void modifyUserName(Long userId, PatchUserReq patchUserReq) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
@@ -73,10 +74,17 @@ public class UserService {
         user.updateName(patchUserReq.getName());
     }
 
+    @Transactional
     public void deleteUser(Long userId) {
-        User user = userRepository.findByIdAndState(userId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
-        user.deleteUser();
+        // 유저를 찾되, 상태가 ACTIVE인 유저만 찾습니다.
+        User user = userRepository.findByIdAndState(userId, UserState.ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER)); // 유저를 찾지 못했다면 예외를 던집니다.
+
+        // 유저의 상태를 DEACTIVATED로 변경합니다.
+        user.setStatus(UserState.DEACTIVATED);
+
+        // 변경된 상태를 저장합니다.
+        userRepository.save(user);
     }
 
     @Transactional(readOnly = true)
